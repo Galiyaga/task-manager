@@ -35,7 +35,62 @@
         </div>
     </nav>
     <div class="container">
-        <p id="content">Please Sign In to see your tasks!</p>
+        <div id="content">
+            <p>Please Sign In to see your tasks!</p> 
+        </div>
+        <div class="header">
+            <div class="header-title">
+                <h2>Awesome Kanban Board</h2>
+            </div>
+            <div class="user-menu">
+                <div class="user-avatar" onclick="toggleMenu()">
+                    <img src="../img/user-avatar.svg" alt="User Avatar">
+                    <span class="arrow">&#9660;</span>
+                </div>
+                <div class="menu-list" id="userMenu">
+                    <a href="#">My account</a>
+                    <a href="#">My tasks</a>
+                    <a href="#">Log out</a>
+                </div>
+            </div>
+        </div>
+        <div class="kanban-board">
+            <div class="kanban-block" id="backlog" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <p>Backlog</p>
+                <div class="task-container"></div>
+                <button id="add-task-backlog" onclick="addTask('backlog')">+ Add card</button>
+            </div>
+            <div class="kanban-block" id="ready" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <p>Ready</p>
+                <div class="task-container"></div>
+                <button id="add-task-ready" onclick="addTask('ready')">+ Add card</button>
+            </div>
+            <div class="kanban-block" id="inprogress" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <p>In progress</p>
+                <div class="task-container"></div>
+                <button id="add-task-inprogress" onclick="addTask('inprogress')">+ Add card</button>
+            </div>
+            <div class="kanban-block" id="finished" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <p>Finished</p>
+                <div class="task-container"></div>
+                <button id="add-task-finished" onclick="addTask('finished')">+ Add card</button>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-tasks">
+                <p>Active tasks: <span id="active-tasks">0</span></p>
+                <p>Finished tasks: <span id="finished-tasks">0</span></p>
+            </div>
+            <div class="user-tasks">
+                <p>Kanban board by<span id="user-name">NAME</span><span id="user-age">YEAR</span></p>
+            </div>
+        </div>
+        <div>
+            
+        </div>
+        <div>
+            
+        </div>
     </div>
 
 

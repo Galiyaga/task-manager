@@ -17,6 +17,9 @@ module.exports = {
     }),
     new CleanWebpackPlugin(),
   ],
+  stats: {
+    children: true, 
+ },
   module: {
     rules: [
       {

@@ -25,3 +25,10 @@ loginForm.addEventListener("submit", function (e) {
 
   document.querySelector("#content").innerHTML = fieldHTMLContent;
 });
+
+function toggleMenu() {
+  const menu = document.getElementById('userMenu');
+  menu.classList.toggle('show');
+  const arrow = document.querySelector('.arrow');
+  arrow.classList.toggle('rotate');
+}
