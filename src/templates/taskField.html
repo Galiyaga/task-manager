@@ -18,19 +18,13 @@
     <div class="kanban-board">
         <div class="kanban-block" id="backlog" ondrop="drop(event)" ondragover="allowDrop(event)">
             <p>Backlog</p>
-            <div class="task-container">
+            <div id="backlog-task-container" class="task-container">
                 <div class="task">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Expedita, quam.</div>
-                <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
-                <div class="task">Lorem ipsum dolor sit amet.</div>
-                <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
-                <div class="task">Lorem ipsum dolor sit amet.</div>
-                <div class="task">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Expedita, quam.</div>
-                <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
-                <div class="task">Lorem ipsum dolor sit amet.</div>
-                <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
-                <div class="task">Lorem ipsum dolor sit amet.</div>
             </div>
-            <button class="add-task" id="add-task-backlog" onclick="addTask('backlog')">+ Add card</button>
+
+            <div id="new-task"></div>
+
+            <button class="add-task" id="add-task-backlog">+ Add card</button>
         </div>
         <div class="kanban-block" id="ready" ondrop="drop(event)" ondragover="allowDrop(event)">
             <p>Ready</p>
