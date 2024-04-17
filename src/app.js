@@ -3,7 +3,7 @@ import "./styles/style.css";
 import taskFieldTemplate from "./templates/taskField.html";
 import noAccessTemplate from "./templates/noAccess.html";
 import { User } from "./models/User";
-import {generateAdminUser, generateSimpleUser} from "./utils";
+import {generateAdminUser, generateSimpleUser, getFromStorage} from "./utils";
 import { State } from "./state";
 import { authUser } from "./services/auth";
 
@@ -13,6 +13,19 @@ const loginForm = document.querySelector("#app-login-form");
 
 generateSimpleUser(User);
 generateAdminUser(User);
+checkForUsers()
+
+function checkForUsers() {
+  const users = getFromStorage('users')
+  if (users.length) renderTaskBoard()
+}
+
+function renderTaskBoard() {
+  const navbar = document.querySelector('#navbar')
+  navbar.remove()
+
+  document.querySelector("#content").innerHTML = taskFieldTemplate;
+}
 
 loginForm.addEventListener("submit", function (e) {
   e.preventDefault();
@@ -21,15 +34,11 @@ loginForm.addEventListener("submit", function (e) {
   const password = formData.get("password");
 
   const authSuccess = authUser(login, password)
-  const fieldHTMLContent = authSuccess ? taskFieldTemplate : noAccessTemplate;
 
   if (authSuccess) {
-    const navbar = document.querySelector('#navbar')
-    navbar.remove()
+    renderTaskBoard()
+  } else {
+    document.querySelector("#content").innerHTML = noAccessTemplate;
   }
-
-  console.log('fieldHTMLContent: ', fieldHTMLContent)
-
-  document.querySelector("#content").innerHTML = fieldHTMLContent;
 });
 
