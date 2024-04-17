@@ -10,9 +10,9 @@ export class User extends BaseModel {
   }
   get hasAccess() {
     let users = getFromStorage(this.storageKey);
-    if (users.length == 0) return false;
+    if (users.length === 0) return false;
     for (let user of users) {
-      if (user.login == this.login && user.password == this.password)
+      if (user.login === this.login && user.password === this.password)
         return true;
     }
     return false;

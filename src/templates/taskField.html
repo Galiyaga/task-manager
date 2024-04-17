@@ -1,1 +1,60 @@
-<h1>Your tasks here</h1>
+<div class="container">
+    <div class="header">
+        <div class="header-title">
+            <p>Awesome Kanban Board</p>
+        </div>
+        <div class="user-menu">
+            <div class="user-avatar" onclick="toggleMenu()">
+                <img src="../../img/user-avatar.svg" alt="User Avatar">
+                <span class="arrow">&#9660;</span>
+            </div>
+            <div class="menu-list" id="userMenu">
+                <a href="#">My account</a>
+                <a href="#">My tasks</a>
+                <a href="#">Log out</a>
+            </div>
+        </div>
+    </div>
+    <div class="kanban-board">
+        <div class="kanban-block" id="backlog" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <p>Backlog</p>
+            <div class="task-container">
+                <div class="task">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Expedita, quam.</div>
+                <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
+                <div class="task">Lorem ipsum dolor sit amet.</div>
+                <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
+                <div class="task">Lorem ipsum dolor sit amet.</div>
+                <div class="task">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Expedita, quam.</div>
+                <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
+                <div class="task">Lorem ipsum dolor sit amet.</div>
+                <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
+                <div class="task">Lorem ipsum dolor sit amet.</div>
+            </div>
+            <button class="add-task" id="add-task-backlog" onclick="addTask('backlog')">+ Add card</button>
+        </div>
+        <div class="kanban-block" id="ready" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <p>Ready</p>
+            <div class="task-container"></div>
+            <button class="add-task" id="add-task-ready" onclick="addTask('ready')">+ Add card</button>
+        </div>
+        <div class="kanban-block" id="inprogress" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <p>In progress</p>
+            <div class="task-container"></div>
+            <button class="add-task" id="add-task-inprogress" onclick="addTask('inprogress')">+ Add card</button>
+        </div>
+        <div class="kanban-block" id="finished" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <p>Finished</p>
+            <div class="task-container"></div>
+            <button class="add-task" id="add-task-finished" onclick="addTask('finished')">+ Add card</button>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="footer-tasks">
+            <p>Active tasks: <span id="active-tasks">&lt0&gt</span></p>
+            <p>Finished tasks: <span id="finished-tasks">&lt0&gt</span></p>
+        </div>
+        <div class="user-tasks">
+            <p>Kanban board by<span id="user-name">&ltNAME&gt, </span><span id="user-age">&ltYEAR&gt</span></p>
+        </div>
+    </div>
+</div>

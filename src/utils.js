@@ -8,8 +8,22 @@ export const addToStorage = function (obj, key) {
   localStorage.setItem(key, JSON.stringify(storageData));
 };
 
-export const generateTestUser = function (User) {
-  localStorage.clear();
-  const testUser = new User("test", "qwerty123");
-  User.save(testUser);
+export const generateUser = function (User, userData) {
+  // localStorage.clear();
+  const user = new User(userData.login, userData.password);
+  User.save(user);
 };
+
+export const generateSimpleUser = function (User) {
+  generateUser(User, {
+    login: 'Vasya',
+    password: 'qwerty123'
+  })
+}
+
+export const generateAdminUser = function (User) {
+  generateUser(User, {
+    login: 'admin',
+    password: '123'
+  })
+}

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -10,8 +10,7 @@
 </head>
 
 <body class="bg-light">
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">SimpleTODO</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -35,156 +34,7 @@
             </div>
         </div>
     </nav>
-    <div class="container">
-        <div id="content">
-            <p>Please Sign In to see your tasks!</p> 
-        </div>
-        <div class="header">
-            <div class="header-title">
-                <p>Awesome Kanban Board</p>
-            </div>
-            <div class="user-menu">
-                <div class="user-avatar" onclick="toggleMenu()">
-                    <img src="../img/user-avatar.svg" alt="User Avatar">
-                    <span class="arrow">&#9660;</span>
-                </div>
-                <div class="menu-list" id="userMenu">
-                    <a href="#">My account</a>
-                    <a href="#">My tasks</a>
-                    <a href="#">Log out</a>
-                </div>
-            </div>
-        </div>
-        <div class="kanban-board">
-            <div class="kanban-block" id="backlog" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <p>Backlog</p>
-                <div class="task-container">
-                    <div class="task">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Expedita, quam.</div>
-                    <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
-                    <div class="task">Lorem ipsum dolor sit amet.</div>
-                    <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
-                    <div class="task">Lorem ipsum dolor sit amet.</div>
-                    <div class="task">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Expedita, quam.</div>
-                    <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
-                    <div class="task">Lorem ipsum dolor sit amet.</div>
-                    <div class="task">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore, fugit modi rerum nihil libero culpa..</div>
-                    <div class="task">Lorem ipsum dolor sit amet.</div>
-                </div>
-                <button class="add-task" id="add-task-backlog" onclick="addTask('backlog')">+ Add card</button>
-            </div>
-            <div class="kanban-block" id="ready" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <p>Ready</p>
-                <div class="task-container"></div>
-                <button class="add-task" id="add-task-ready" onclick="addTask('ready')">+ Add card</button>
-            </div>
-            <div class="kanban-block" id="inprogress" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <p>In progress</p>
-                <div class="task-container"></div>
-                <button class="add-task" id="add-task-inprogress" onclick="addTask('inprogress')">+ Add card</button>
-            </div>
-            <div class="kanban-block" id="finished" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <p>Finished</p>
-                <div class="task-container"></div>
-                <button class="add-task" id="add-task-finished" onclick="addTask('finished')">+ Add card</button>
-            </div>
-        </div>
-        <div class="footer">
-            <div class="footer-tasks">
-                <p>Active tasks: <span id="active-tasks">&lt0&gt</span></p>
-                <p>Finished tasks: <span id="finished-tasks">&lt0&gt</span></p>
-            </div>
-            <div class="user-tasks">
-                <p>Kanban board by<span id="user-name">&ltNAME&gt, </span><span id="user-age">&ltYEAR&gt</span></p>
-            </div>
-        </div>
-        <div>
-            
-        </div>
-        <div>
-            
-        </div>
-    </div>
-<script>// Инициализация данных
-    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
-    function toggleMenu() {
-        const menu = document.getElementById('userMenu');
-        menu.classList.toggle('show');
-        const arrow = document.querySelector('.arrow');
-        arrow.classList.toggle('rotate');
-    }
-    
-    // Функция для отображения задач
-    function renderTasks() {
-     const columns = ['Backlog', 'Ready', 'In progress', 'Finished'];
-     columns.forEach(columnId => {
-        const column = document.getElementById(columnId);
-        column.querySelector('.task-container').innerHTML = '';
-        tasks.forEach(task => {
-          if (task.status === columnId) {
-            const taskElement = createTaskElement(task.title, task.id);
-            column.querySelector('.task-container').appendChild(taskElement);
-          }
-        });
-     });
-    }
-    
-    // Функция для создания элемента задачи
-    function createTaskElement(content, id) {
-     const task = document.createElement('div');
-     task.id = id;
-     task.className = 'task';
-     task.draggable = true;
-     task.innerHTML = `${content} <span class="delete-btn" onclick="deleteTask('${id}')">❌</span>`;
-     return task;
-    }
-    
-    // Функция для добавления задачи
-    function addTask(columnId) {
-     const taskInput = document.getElementById('taskInput');
-     const taskContent = taskInput.value.trim();
-     if (taskContent !== '') {
-        const newTask = {
-          id: 'task-' + Date.now(),
-          title: taskContent,
-          status: columnId
-        };
-        tasks.push(newTask);
-        updateLocalStorage();
-        renderTasks();
-        taskInput.value = '';
-     }
-    }
-    
-    // Функция для обновления localStorage
-    function updateLocalStorage() {
-     localStorage.setItem('tasks', JSON.stringify(tasks));
-    }
-    
-    // Функция для удаления задачи
-    function deleteTask(taskId) {
-     tasks = tasks.filter(task => task.id !== taskId);
-     updateLocalStorage();
-     renderTasks();
-    }
-    
-    // Функция для перемещения задачи
-    function moveTask(taskId, newStatus) {
-     tasks = tasks.map(task => {
-        if (task.id === taskId) {
-          return { ...task, status: newStatus };
-        }
-        return task;
-     });
-     updateLocalStorage();
-     renderTasks();
-    }
-    
-    // Инициализация
-    document.addEventListener("DOMContentLoaded", function() {
-     renderTasks();
-    });</script>
-
+    <div id="content"></div>
 </body>
-
 </html>

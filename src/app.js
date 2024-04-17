@@ -3,7 +3,7 @@ import "./styles/style.css";
 import taskFieldTemplate from "./templates/taskField.html";
 import noAccessTemplate from "./templates/noAccess.html";
 import { User } from "./models/User";
-import { generateTestUser } from "./utils";
+import {generateAdminUser, generateSimpleUser} from "./utils";
 import { State } from "./state";
 import { authUser } from "./services/auth";
 
@@ -11,7 +11,8 @@ export const appState = new State();
 
 const loginForm = document.querySelector("#app-login-form");
 
-generateTestUser(User);
+generateSimpleUser(User);
+generateAdminUser(User);
 
 loginForm.addEventListener("submit", function (e) {
   e.preventDefault();
@@ -19,9 +20,15 @@ loginForm.addEventListener("submit", function (e) {
   const login = formData.get("login");
   const password = formData.get("password");
 
-  let fieldHTMLContent = authUser(login, password)
-    ? taskFieldTemplate
-    : noAccessTemplate;
+  const authSuccess = authUser(login, password)
+  const fieldHTMLContent = authSuccess ? taskFieldTemplate : noAccessTemplate;
+
+  if (authSuccess) {
+    const navbar = document.querySelector('#navbar')
+    navbar.remove()
+  }
+
+  console.log('fieldHTMLContent: ', fieldHTMLContent)
 
   document.querySelector("#content").innerHTML = fieldHTMLContent;
 });
