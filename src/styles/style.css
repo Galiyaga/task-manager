@@ -200,7 +200,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
 
 .add-task {
   background-color: rgba(235, 236, 240, 1);
-  width: 50%;
+  width: 35%;
   font-family: Roboto;
   font-size: 18px;
   text-align: left;
@@ -214,10 +214,88 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
   background-color: #FFFFFF;
 }
 
-/* .add-task:hover {
+/*.form-control {*/
+/*  display: flex;*/
+/*  align-items: center;*/
+/*  position: relative;*/
+/*  max-width: 100%;*/
+/*}*/
+
+.form-control {
+  font-size: 18px;
+  font-family: Roboto;
+  padding: 2px 8px;
+  width: 100%;
+  background: #FFFFFF;
+  color: #000000;
+  border-radius: 5px;
+  transition: .2s ease;
+  margin-bottom: 10px;
+}
+
+.form-control:focus {
+  background: #FFFFFF;
+  border: 1px solid #5A7EC7;
+  border-radius: 5px;
+  border-bottom: 1px solid black;
+}
+
+.submit-task {
+  background-color: rgba(235, 236, 240, 1);
+  width: 35%;
+  font-family: Roboto;
+  font-size: 18px;
+  text-align: center;
+  color: rgba(94, 108, 132, 1);
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 0px solid #FFFFFF;
+}
+
+.submit-task:hover {
   color: #FFFFFF !important;
   background: #0079BF;
-} */
+}
+
+.button:active {
+  margin-top: 1px;
+  margin-bottom: -1px;
+  zoom: 1;
+}
+
+.custom-select {
+  position: relative;
+}
+
+.custom-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  font-size: 18px;
+  padding: 4px 8px 4px 8px;
+  border-radius: 5px;
+  color: #000000;
+  cursor: pointer;
+  outline: none;
+}
+
+.custom-select select:focus {
+  border: 1px solid #0079BF;
+  border-radius: 5px;
+}
+
+.custom-select::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  top: 50%;
+  right: 9px;
+  transform: translate(0, -50%);
+  width: 18px;
+  height: 18px;
+  background-color: #000000;
+  clip-path: polygon(8% 17%, 0% 25%, 50% 84%, 100% 25%, 92% 17%, 50% 65%);
+}
 
 .footer {
   display: flex;

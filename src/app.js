@@ -43,7 +43,20 @@ loginForm.addEventListener("submit", function (e) {
   }
 });
 
-// const addReady = document.querySelector("#add-task-ready")
+document.addEventListener('click', (e) => {
+  const addReady = e.target.closest("#add-task-ready");
+  const select = document.querySelector("#select");
+  if (addReady) {
+    let readyContainer = document.querySelector("#ready-task-container");
+    let backlogContainer = document.querySelector("#backlog-task-container");
+    let backlogTasks = backlogContainer.querySelectorAll(".task").forEach(task => {
+      const option = document.createElement('option')
+      option.className = "task";
+      option.textContent = backlogTasks.innerHTML;
+      select.appendChild(backlogTasks);
+    });
+  }
+})
 // const addInProgress = document.querySelector("#add-task-inprogress")
 // const addFinished = document.querySelector("#add-task-finished")
 
@@ -53,10 +66,28 @@ document.addEventListener('click', (e) => {
 
   if (addBacklog) {
     document.querySelector('#new-task').innerHTML = newTask
-    addBacklog.classList.add("hidden")
+    addBacklog.classList.add("hidden");
+    document.querySelector("#task-input").focus();
   }
   if (submitBacklog) {
     document.querySelector("#add-task-backlog").classList.remove("hidden");
+    function saveInputValue() {
+      let inputValue = document.querySelector("#task-input").value;
+
+      let newTaskDiv = document.createElement("div");
+      newTaskDiv.className = "task";
+      newTaskDiv.textContent = inputValue;
+
+      if (inputValue.length) {
+        document.querySelector("#backlog-task-container").appendChild(newTaskDiv);
+      }
+
+      document.querySelector("#task-input").remove();
+    }
+    saveInputValue();
+
+    document.querySelector('#submit-backlog').remove();
+
   }
 });
 
