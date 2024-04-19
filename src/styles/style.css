@@ -224,7 +224,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
 .form-control {
   font-size: 18px;
   font-family: Roboto;
-  padding: 2px 8px;
+  padding: 7px 10px;
   width: 100%;
   background: #FFFFFF;
   color: #000000;
@@ -265,6 +265,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
 
 .custom-select {
   position: relative;
+  display: none;
 }
 
 .custom-select select {
@@ -272,7 +273,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
   -webkit-appearance: none;
   width: 100%;
   font-size: 18px;
-  padding: 4px 8px 4px 8px;
+  padding: 10px;
   border-radius: 5px;
   color: #000000;
   cursor: pointer;

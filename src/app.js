@@ -7,6 +7,7 @@ import { User } from "./models/User";
 import {generateAdminUser, generateSimpleUser, getFromStorage} from "./utils";
 import { State } from "./state";
 import { authUser } from "./services/auth";
+import {Task} from "./models/Task"
 
 export const appState = new State();
 
@@ -43,27 +44,16 @@ loginForm.addEventListener("submit", function (e) {
   }
 });
 
-document.addEventListener('click', (e) => {
-  const addReady = e.target.closest("#add-task-ready");
-  const select = document.querySelector("#select");
-  if (addReady) {
-    let readyContainer = document.querySelector("#ready-task-container");
-    let backlogContainer = document.querySelector("#backlog-task-container");
-    let backlogTasks = backlogContainer.querySelectorAll(".task").forEach(task => {
-      const option = document.createElement('option')
-      option.className = "task";
-      option.textContent = backlogTasks.innerHTML;
-      select.appendChild(backlogTasks);
-    });
-  }
-})
-// const addInProgress = document.querySelector("#add-task-inprogress")
-// const addFinished = document.querySelector("#add-task-finished")
+const selectBlock = document.querySelector('#select-block');
+const readyContainer = document.querySelector('#ready-task-container');
+const select = document.querySelector("#select");
+let tasksInfo = [];
 
 document.addEventListener('click', (e) => {
   const addBacklog = e.target.closest("#add-task-backlog");
   const submitBacklog = e.target.closest("#submit-backlog");
-
+  const addReady = e.target.closest("#add-task-ready");
+  
   if (addBacklog) {
     document.querySelector('#new-task').innerHTML = newTask
     addBacklog.classList.add("hidden");
@@ -73,12 +63,23 @@ document.addEventListener('click', (e) => {
     document.querySelector("#add-task-backlog").classList.remove("hidden");
     function saveInputValue() {
       let inputValue = document.querySelector("#task-input").value;
-
-      let newTaskDiv = document.createElement("div");
-      newTaskDiv.className = "task";
-      newTaskDiv.textContent = inputValue;
-
       if (inputValue.length) {
+        const newTask = new Task(inputValue);
+
+        let taskInfo = {
+          title: newTask.text,
+          id: newTask.id,
+          userId: 'user123', 
+          status: 'backlog'
+        };
+
+        tasksInfo.push(taskInfo);
+        console.log(taskInfo)
+
+        let newTaskDiv = document.createElement("div");
+        newTaskDiv.className = "task";
+        newTaskDiv.textContent = taskInfo.title;
+        newTaskDiv.id = taskInfo.id; 
         document.querySelector("#backlog-task-container").appendChild(newTaskDiv);
       }
 
@@ -87,8 +88,35 @@ document.addEventListener('click', (e) => {
     saveInputValue();
 
     document.querySelector('#submit-backlog').remove();
+  }
+
+  if (addReady) {
+    selectBlock.style.display = 'block';  
+    readyContainer.insertBefore(selectBlock, null);
+    tasksInfo.forEach(taskInfo => {
+      const existingTask = document.querySelector(`#ready-task-container .option-item[id="${taskInfo.id}"]`);
+      if (!existingTask) {
+      const option = document.createElement('option')
+      option.className = "option-item";
+      option.textContent = taskInfo.title;
+      option.id = taskInfo.id;
+      select.appendChild(option);
+      }
+    });
 
   }
 });
 
+select.addEventListener('change', (e) => {
+  const selectedTask = e.target.value;
+  addTaskToReadyContainer(selectedTask);
+});
+
+function addTaskToReadyContainer(taskText) {
+  let newTaskDiv = document.createElement('div');
+  newTaskDiv.className = 'task'; 
+  newTaskDiv.textContent = taskText;
+  readyContainer.appendChild(newTaskDiv);
+  selectBlock.style.display = 'none';
+}
 
