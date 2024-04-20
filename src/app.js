@@ -69,9 +69,7 @@ document.addEventListener('click', (e) => {
 
         let taskInfo = {
           title: newTask.text,
-          id: newTask.id,
-          userId: 'user123', 
-          status: 'backlog'
+          id: newTask.id
         };
 
         tasksInfo.push(taskInfo);
@@ -124,4 +122,3 @@ function addTaskToReadyContainer(taskText) {
   readyContainer.appendChild(newTaskDiv);
   selectBlock.style.display = 'none';
 }
-
