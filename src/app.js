@@ -48,6 +48,7 @@ const selectBlock = document.querySelector('#select-block');
 const readyContainer = document.querySelector('#ready-task-container');
 const select = document.querySelector("#select");
 let tasksInfo = [];
+let addedTasksIds = [];
 
 document.addEventListener('click', (e) => {
   const addBacklog = e.target.closest("#add-task-backlog");
@@ -91,11 +92,11 @@ document.addEventListener('click', (e) => {
   }
 
   if (addReady) {
+    select.innerHTML = '';
     selectBlock.style.display = 'block';  
     readyContainer.insertBefore(selectBlock, null);
     tasksInfo.forEach(taskInfo => {
-      const existingTask = document.querySelector(`#ready-task-container .option-item[id="${taskInfo.id}"]`);
-      if (!existingTask) {
+      if (!addedTasksIds.includes(taskInfo.id)) {
       const option = document.createElement('option')
       option.className = "option-item";
       option.textContent = taskInfo.title;
@@ -103,13 +104,17 @@ document.addEventListener('click', (e) => {
       select.appendChild(option);
       }
     });
-
   }
 });
 
 select.addEventListener('change', (e) => {
-  const selectedTask = e.target.value;
+  const selectedOption = e.target.options[e.target.selectedIndex];
+  const selectedTask = selectedOption.value;
+  
+  addedTasksIds.push(selectedOption.id);
   addTaskToReadyContainer(selectedTask);
+  select.removeChild(selectedOption);
+
 });
 
 function addTaskToReadyContainer(taskText) {
