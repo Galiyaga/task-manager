@@ -93,6 +93,13 @@ document.addEventListener('click', (e) => {
     select.innerHTML = '';
     selectBlock.style.display = 'block';  
     readyContainer.insertBefore(selectBlock, null);
+
+    const emptyOption = document.createElement('option');
+    emptyOption.textContent = '';
+    emptyOption.class = 'option-empty'
+    select.appendChild(emptyOption);
+
+
     tasksInfo.forEach(taskInfo => {
       if (!addedTasksIds.includes(taskInfo.id)) {
       const option = document.createElement('option')
@@ -109,9 +116,9 @@ select.addEventListener('change', (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
   const selectedTask = selectedOption.value;
   
-  addedTasksIds.push(selectedOption.id);
   addTaskToReadyContainer(selectedTask);
   select.removeChild(selectedOption);
+  addedTasksIds.push(selectedOption.id);
 
 });
 
