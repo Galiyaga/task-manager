@@ -96,7 +96,7 @@ document.addEventListener('click', (e) => {
 
     const emptyOption = document.createElement('option');
     emptyOption.textContent = '';
-    emptyOption.class = 'option-empty'
+    emptyOption.className = 'option-empty'
     select.appendChild(emptyOption);
 
 
@@ -119,8 +119,14 @@ select.addEventListener('change', (e) => {
   addTaskToReadyContainer(selectedTask);
   select.removeChild(selectedOption);
   addedTasksIds.push(selectedOption.id);
-
+  
+  if (select.querySelectorAll('.option-item').length === 0) {
+    document.querySelector('#add-task-ready').disabled = true;
+  } else {
+    document.querySelector('#add-task-ready').disabled = false;
+  }
 });
+
 
 function addTaskToReadyContainer(taskText) {
   let newTaskDiv = document.createElement('div');
