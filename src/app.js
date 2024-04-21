@@ -12,6 +12,20 @@ import {Task} from "./models/Task"
 export const appState = new State();
 
 const loginForm = document.querySelector("#app-login-form");
+loginForm.addEventListener("submit", function (e) {
+  e.preventDefault();
+  const formData = new FormData(loginForm);
+  const login = formData.get("login");
+  const password = formData.get("password");
+
+  const authSuccess = authUser(login, password)
+
+  if (authSuccess) {
+    renderTaskBoard()
+  } else {
+    document.querySelector("#content").innerHTML = noAccessTemplate;
+  }
+});
 
 generateSimpleUser(User);
 generateAdminUser(User);
@@ -29,87 +43,73 @@ function renderTaskBoard() {
   document.querySelector("#content").innerHTML = taskFieldTemplate;
 }
 
-loginForm.addEventListener("submit", function (e) {
-  e.preventDefault();
-  const formData = new FormData(loginForm);
-  const login = formData.get("login");
-  const password = formData.get("password");
-
-  const authSuccess = authUser(login, password)
-
-  if (authSuccess) {
-    renderTaskBoard()
-  } else {
-    document.querySelector("#content").innerHTML = noAccessTemplate;
-  }
-});
-
 const selectBlock = document.querySelector('#select-block');
 const readyContainer = document.querySelector('#ready-task-container');
 const select = document.querySelector("#select");
-let tasksInfo = [];
+let backlogTasks = [];
 let addedTasksIds = [];
+
+// Логика добавления в колонки
+function addToBacklog () {
+  const addBacklog = document.querySelector("#add-task-backlog");
+  addBacklog.classList.add("hidden");
+
+  document.querySelector('#new-task').innerHTML = newTask
+  document.querySelector("#task-input").focus();
+}
+function saveToBacklog() {
+  let inputValue = document.querySelector("#task-input").value;
+  if (inputValue.length) {
+    const newTask = new Task(inputValue);
+
+    let taskInfo = {
+      title: newTask.text,
+      id: newTask.id
+    };
+
+    backlogTasks.push(taskInfo);
+    console.log(taskInfo)
+
+    let newTaskDiv = document.createElement("div");
+    newTaskDiv.className = "task";
+    newTaskDiv.textContent = taskInfo.title;
+    newTaskDiv.id = taskInfo.id;
+    document.querySelector("#backlog-task-container").appendChild(newTaskDiv);
+  }
+
+  document.querySelector("#task-input").remove();
+  document.querySelector("#add-task-backlog").classList.remove("hidden");
+  document.querySelector('#submit-backlog').remove();
+}
+function addToReady () {
+  select.innerHTML = '';
+  selectBlock.style.display = 'block';
+  readyContainer.appendChild(selectBlock);
+
+  const emptyOption = document.createElement('option');
+  emptyOption.textContent = '';
+  emptyOption.className = 'option-empty'
+  select.appendChild(emptyOption);
+
+  backlogTasks.forEach(taskInfo => {
+    if (!addedTasksIds.includes(taskInfo.id)) {
+      const option = document.createElement('option')
+      option.className = "option-item";
+      option.textContent = taskInfo.title;
+      option.id = taskInfo.id;
+      select.appendChild(option);
+    }
+  });
+}
 
 document.addEventListener('click', (e) => {
   const addBacklog = e.target.closest("#add-task-backlog");
   const submitBacklog = e.target.closest("#submit-backlog");
   const addReady = e.target.closest("#add-task-ready");
   
-  if (addBacklog) {
-    document.querySelector('#new-task').innerHTML = newTask
-    addBacklog.classList.add("hidden");
-    document.querySelector("#task-input").focus();
-  }
-  if (submitBacklog) {
-    document.querySelector("#add-task-backlog").classList.remove("hidden");
-    function saveInputValue() {
-      let inputValue = document.querySelector("#task-input").value;
-      if (inputValue.length) {
-        const newTask = new Task(inputValue);
-
-        let taskInfo = {
-          title: newTask.text,
-          id: newTask.id
-        };
-
-        tasksInfo.push(taskInfo);
-        console.log(taskInfo)
-
-        let newTaskDiv = document.createElement("div");
-        newTaskDiv.className = "task";
-        newTaskDiv.textContent = taskInfo.title;
-        newTaskDiv.id = taskInfo.id; 
-        document.querySelector("#backlog-task-container").appendChild(newTaskDiv);
-      }
-
-      document.querySelector("#task-input").remove();
-    }
-    saveInputValue();
-
-    document.querySelector('#submit-backlog').remove();
-  }
-
-  if (addReady) {
-    select.innerHTML = '';
-    selectBlock.style.display = 'block';  
-    readyContainer.insertBefore(selectBlock, null);
-
-    const emptyOption = document.createElement('option');
-    emptyOption.textContent = '';
-    emptyOption.className = 'option-empty'
-    select.appendChild(emptyOption);
-
-
-    tasksInfo.forEach(taskInfo => {
-      if (!addedTasksIds.includes(taskInfo.id)) {
-      const option = document.createElement('option')
-      option.className = "option-item";
-      option.textContent = taskInfo.title;
-      option.id = taskInfo.id;
-      select.appendChild(option);
-      }
-    });
-  }
+  if (addBacklog) addToBacklog()
+  else if (submitBacklog) saveToBacklog();
+  else if (addReady) addToReady()
 });
 
 select.addEventListener('change', (e) => {
