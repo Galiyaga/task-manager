@@ -46,8 +46,9 @@ function renderTaskBoard() {
 const selectBlock = document.querySelector('#select-block');
 const readyContainer = document.querySelector('#ready-task-container');
 const select = document.querySelector("#select");
-let backlogTasks = [];
-let addedTasksIds = [];
+
+const backlogTasks = [];
+const readyTasks = [];
 
 // Логика добавления в колонки
 function addToBacklog () {
@@ -91,14 +92,14 @@ function addToReady () {
   emptyOption.className = 'option-empty'
   select.appendChild(emptyOption);
 
-  backlogTasks.forEach(taskInfo => {
-    if (!addedTasksIds.includes(taskInfo.id)) {
-      const option = document.createElement('option')
-      option.className = "option-item";
-      option.textContent = taskInfo.title;
-      option.id = taskInfo.id;
-      select.appendChild(option);
-    }
+  const availableToReadyTasks = backlogTasks.filter(task => !readyTasks.includes(task.id))
+
+  availableToReadyTasks.forEach(taskInfo => {
+    const option = document.createElement('option')
+    option.className = "option-item";
+    option.textContent = taskInfo.title;
+    option.id = taskInfo.id;
+    select.appendChild(option);
   });
 }
 
@@ -118,7 +119,7 @@ select.addEventListener('change', (e) => {
   
   addTaskToReadyContainer(selectedTask);
   select.removeChild(selectedOption);
-  addedTasksIds.push(selectedOption.id);
+  readyTasks.push(selectedOption.id);
   
   if (select.querySelectorAll('.option-item').length === 0) {
     document.querySelector('#add-task-ready').disabled = true;
