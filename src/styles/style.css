@@ -260,7 +260,17 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
 .button:active {
   margin-top: 1px;
   margin-bottom: -1px;
-  zoom: 1;
+}
+.button:disabled {
+  cursor: default;
+  background: transparent;
+  opacity: .8;
+}
+.button:hover:disabled {
+  background: transparent;
+}
+.button:active:disabled {
+  margin: 0
 }
 
 .custom-select {

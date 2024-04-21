@@ -81,14 +81,19 @@ function saveToBacklog() {
   document.querySelector("#task-input").remove();
   document.querySelector("#add-task-backlog").classList.remove("hidden");
   document.querySelector('#submit-backlog').remove();
+
+  createOptionsForReady()
 }
 function addToReady () {
-  select.innerHTML = '';
   selectBlock.style.display = 'block';
   readyContainer.appendChild(selectBlock);
+}
+
+function createOptionsForReady() {
+  select.innerHTML = '';
 
   const emptyOption = document.createElement('option');
-  emptyOption.textContent = '';
+  emptyOption.textContent = 'Выберите вариант';
   emptyOption.className = 'option-empty'
   select.appendChild(emptyOption);
 
@@ -101,6 +106,8 @@ function addToReady () {
     option.id = taskInfo.id;
     select.appendChild(option);
   });
+
+  document.querySelector('#add-task-ready').disabled = false;
 }
 
 document.addEventListener('click', (e) => {
