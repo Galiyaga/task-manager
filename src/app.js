@@ -43,12 +43,17 @@ function renderTaskBoard() {
   document.querySelector("#content").innerHTML = taskFieldTemplate;
 }
 
-const selectBlock = document.querySelector('#select-block');
+const readySelectBlock = document.querySelector('#ready-select-block');
+const inProgressSelectBlock = document.querySelector('#inProgress-select-block');
 const readyContainer = document.querySelector('#ready-task-container');
-const select = document.querySelector("#select");
+const inProgressContainer = document.querySelector('#inProgress-task-container');
+const readySelect = document.querySelector("#ready-select");
+const inProgressSelect = document.querySelector("#inProgress-select");
 
 const backlogTasks = [];
 const readyTasks = [];
+const readyOptions = [];
+const inProgressTasks= [];
 
 // Логика добавления в колонки
 function addToBacklog () {
@@ -69,7 +74,7 @@ function saveToBacklog() {
     };
 
     backlogTasks.push(taskInfo);
-    console.log(taskInfo)
+    console.log('backlogTasks:', backlogTasks)
 
     let newTaskDiv = document.createElement("div");
     newTaskDiv.className = "task";
@@ -84,62 +89,128 @@ function saveToBacklog() {
 
   createOptionsForReady()
 }
-function addToReady () {
-  selectBlock.style.display = 'block';
-  readyContainer.appendChild(selectBlock);
+function addToReady() {
+  readySelectBlock.style.display = 'block';
+  readyContainer.appendChild(readySelectBlock);
+}
+
+function addToInProgress() {
+  inProgressSelectBlock.style.display = 'block';
+  inProgressContainer.appendChild(inProgressSelectBlock);
 }
 
 function createOptionsForReady() {
-  select.innerHTML = '';
+  readySelect.innerHTML = '';
 
   const emptyOption = document.createElement('option');
   emptyOption.textContent = 'Выберите вариант';
   emptyOption.className = 'option-empty'
-  select.appendChild(emptyOption);
+  readySelect.appendChild(emptyOption);
 
-  const availableToReadyTasks = backlogTasks.filter(task => !readyTasks.includes(task.id))
+  const availableToreadyOptions = backlogTasks.filter(task => !readyOptions.includes(task.id))
 
-  availableToReadyTasks.forEach(taskInfo => {
+  availableToreadyOptions.forEach(taskInfo => {
     const option = document.createElement('option')
     option.className = "option-item";
     option.textContent = taskInfo.title;
     option.id = taskInfo.id;
-    select.appendChild(option);
+    readySelect.appendChild(option);
   });
 
   document.querySelector('#add-task-ready').disabled = false;
+}
+
+function createOptionsForInProgress() {
+  inProgressSelect.innerHTML = '';
+
+  const emptyOption = document.createElement('option');
+  emptyOption.textContent = 'Выберите вариант';
+  emptyOption.className = 'option-empty'
+  inProgressSelect.appendChild(emptyOption);
+
+  const availableToInProgressTasks = readyTasks.filter(task => !inProgressTasks.includes(task.id))
+
+  availableToInProgressTasks.forEach(taskInfo => {
+    const option = document.createElement('option')
+    option.className = "option-item";
+    option.textContent = taskInfo.title;
+    option.id = taskInfo.id;
+    inProgressSelect.appendChild(option);
+  });
+
+  document.querySelector('#add-task-inProgress').disabled = false;
 }
 
 document.addEventListener('click', (e) => {
   const addBacklog = e.target.closest("#add-task-backlog");
   const submitBacklog = e.target.closest("#submit-backlog");
   const addReady = e.target.closest("#add-task-ready");
+  const addInProgress = e.target.closest("#add-task-inProgress");
   
   if (addBacklog) addToBacklog()
   else if (submitBacklog) saveToBacklog();
-  else if (addReady) addToReady()
+  else if (addReady) addToReady();
+  else if (addInProgress) addToInProgress();
 });
 
-select.addEventListener('change', (e) => {
+readySelect.addEventListener('change', (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
   const selectedTask = selectedOption.value;
+  const selectedTaskId = selectedOption.id;
   
-  addTaskToReadyContainer(selectedTask);
-  select.removeChild(selectedOption);
-  readyTasks.push(selectedOption.id);
+  addTaskToReadyContainer(selectedTask, selectedTaskId);
+  readySelect.removeChild(selectedOption);
+  readyOptions.push(selectedTaskId);
+  console.log('readyOptions:', readyOptions)
   
-  if (select.querySelectorAll('.option-item').length === 0) {
+  if (readySelect.querySelectorAll('.option-item').length === 0) {
     document.querySelector('#add-task-ready').disabled = true;
   } else {
     document.querySelector('#add-task-ready').disabled = false;
   }
 });
 
+inProgressSelect.addEventListener('change', (e) => {
+  const selectedOption = e.target.options[e.target.selectedIndex];
+  const selectedTask = selectedOption.value;
+  const selectedTaskId = selectedOption.id;
+  
+  addTaskToInProgressContainer(selectedTask);
+  inProgressSelect.removeChild(selectedOption);
+  inProgressTasks.push(selectedTaskId)
+  
+  if (inProgressSelect.querySelectorAll('.option-item').length === 0) {
+    document.querySelector('#add-task-inProgress').disabled = true;
+  } else {
+    document.querySelector('#add-task-inProgress').disabled = false;
+  }
+});
 
-function addTaskToReadyContainer(taskText) {
+
+function addTaskToReadyContainer(taskText, taskId) {
   let newTaskDiv = document.createElement('div');
   newTaskDiv.className = 'task'; 
   newTaskDiv.textContent = taskText;
+  newTaskDiv.id = taskId;
   readyContainer.appendChild(newTaskDiv);
-  selectBlock.style.display = 'none';
+  readySelectBlock.style.display = 'none';
+
+  // const newTask = new Task(readyOptions);
+
+  // let taskInfo = {
+  //   title: taskText,
+  //   id: taskId
+  // };
+
+  // readyTasks.push(taskInfo);
+  // console.log('readyTasks addTaskToReadyContainer:', readyTasks)
+  createOptionsForInProgress();
+}
+
+function addTaskToInProgressContainer(taskText) {
+  let newTaskDiv = document.createElement('div');
+  newTaskDiv.className = 'task'; 
+  newTaskDiv.textContent = taskText;
+  inProgressContainer.appendChild(newTaskDiv);
+  inProgressSelectBlock.style.display = 'none';
 }

@@ -25,8 +25,8 @@
         <div class="kanban-block" id="ready">
             <p>Ready</p>
             <div class="task-container" id="ready-task-container">
-                <div class="custom-select" id="select-block">
-                    <select class="select-items" id="select"></select>
+                <div class="custom-select" id="ready-select-block">
+                    <select class="select-items" id="ready-select"></select>
                     <div class="select-arrow"></div>
                 </div>
             </div>
@@ -34,7 +34,12 @@
         </div>
         <div class="kanban-block" id="inProgress">
             <p>In progress</p>
-            <div class="task-container" id="inProgress-task-container"></div>
+            <div class="task-container" id="inProgress-task-container">
+                <div class="custom-select" id="inProgress-select-block">
+                    <select class="select-items" id="inProgress-select"></select>
+                    <div class="select-arrow"></div>
+                </div>
+            </div>
             <button class="button add-task" id="add-task-inProgress">+ Add card</button>
         </div>
         <div class="kanban-block" id="finished">
