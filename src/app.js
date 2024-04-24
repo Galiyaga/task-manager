@@ -52,7 +52,6 @@ const inProgressSelect = document.querySelector("#inProgress-select");
 
 const backlogTasks = [];
 const readyTasks = [];
-const readyOptions = [];
 const inProgressTasks= [];
 
 // Логика добавления в колонки
@@ -89,6 +88,7 @@ function saveToBacklog() {
 
   createOptionsForReady()
 }
+
 function addToReady() {
   readySelectBlock.style.display = 'block';
   readyContainer.appendChild(readySelectBlock);
@@ -107,8 +107,10 @@ function createOptionsForReady() {
   emptyOption.className = 'option-empty'
   readySelect.appendChild(emptyOption);
 
-  const availableToreadyOptions = backlogTasks.filter(task => !readyOptions.includes(task.id))
-
+  const availableToreadyOptions = backlogTasks.filter(task => 
+    !readyTasks.some(readyTask => readyTask.id === task.id)
+   );
+  console.log("availableToreadyOptions:", availableToreadyOptions)
   availableToreadyOptions.forEach(taskInfo => {
     const option = document.createElement('option')
     option.className = "option-item";
@@ -129,7 +131,6 @@ function createOptionsForInProgress() {
   inProgressSelect.appendChild(emptyOption);
 
   const availableToInProgressTasks = readyTasks.filter(task => !inProgressTasks.includes(task.id))
-
   availableToInProgressTasks.forEach(taskInfo => {
     const option = document.createElement('option')
     option.className = "option-item";
@@ -158,10 +159,15 @@ readySelect.addEventListener('change', (e) => {
   const selectedTask = selectedOption.value;
   const selectedTaskId = selectedOption.id;
   
-  addTaskToReadyContainer(selectedTask, selectedTaskId);
   readySelect.removeChild(selectedOption);
-  readyOptions.push(selectedTaskId);
-  console.log('readyOptions:', readyOptions)
+  let taskInfo = {
+    title: selectedTask,
+    id: selectedTaskId
+  };
+  
+  readyTasks.push(taskInfo);
+  console.log('readyTasks:', readyTasks)
+  addTaskToReadyContainer(selectedTask, selectedTaskId);
   
   if (readySelect.querySelectorAll('.option-item').length === 0) {
     document.querySelector('#add-task-ready').disabled = true;
@@ -194,16 +200,7 @@ function addTaskToReadyContainer(taskText, taskId) {
   newTaskDiv.id = taskId;
   readyContainer.appendChild(newTaskDiv);
   readySelectBlock.style.display = 'none';
-
-  // const newTask = new Task(readyOptions);
-
-  // let taskInfo = {
-  //   title: taskText,
-  //   id: taskId
-  // };
-
-  // readyTasks.push(taskInfo);
-  // console.log('readyTasks addTaskToReadyContainer:', readyTasks)
+  
   createOptionsForInProgress();
 }
 
