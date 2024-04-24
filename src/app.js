@@ -57,14 +57,16 @@ const backlogTasks = [];
 const readyTasks = [];
 const inProgressTasks= [];
 const finishedTasks= [];
-
 // Логика добавления в колонки
 function addToBacklog () {
   const addBacklog = document.querySelector("#add-task-backlog");
   addBacklog.classList.add("hidden");
-
+  
   document.querySelector('#new-task').innerHTML = newTask
   document.querySelector("#task-input").focus();
+  document.querySelector("#task-input").addEventListener('blur', function() {
+    saveToBacklog();
+  });
 }
 function saveToBacklog() {
   let inputValue = document.querySelector("#task-input").value;
