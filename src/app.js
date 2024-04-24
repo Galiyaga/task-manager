@@ -45,14 +45,18 @@ function renderTaskBoard() {
 
 const readySelectBlock = document.querySelector('#ready-select-block');
 const inProgressSelectBlock = document.querySelector('#inProgress-select-block');
+const finishedSelectBlock = document.querySelector('#finished-select-block');
 const readyContainer = document.querySelector('#ready-task-container');
 const inProgressContainer = document.querySelector('#inProgress-task-container');
+const finishedContainer = document.querySelector('#finished-task-container');
 const readySelect = document.querySelector("#ready-select");
 const inProgressSelect = document.querySelector("#inProgress-select");
+const finishedSelect = document.querySelector("#finished-select");
 
 const backlogTasks = [];
 const readyTasks = [];
 const inProgressTasks= [];
+const finishedTasks= [];
 
 // Логика добавления в колонки
 function addToBacklog () {
@@ -99,6 +103,11 @@ function addToInProgress() {
   inProgressContainer.appendChild(inProgressSelectBlock);
 }
 
+function addToFinished() {
+  finishedSelectBlock.style.display = 'block';
+  finishedContainer.appendChild(finishedSelectBlock);
+}
+
 function createOptionsForReady() {
   readySelect.innerHTML = '';
 
@@ -107,8 +116,7 @@ function createOptionsForReady() {
   emptyOption.className = 'option-empty'
   readySelect.appendChild(emptyOption);
 
-  const availableToreadyOptions = backlogTasks.filter(task => 
-    !readyTasks.some(readyTask => readyTask.id === task.id)
+  const availableToreadyOptions = backlogTasks.filter(task =>!readyTasks.some(readyTask => readyTask.id === task.id)
    );
   console.log("availableToreadyOptions:", availableToreadyOptions)
   availableToreadyOptions.forEach(taskInfo => {
@@ -130,7 +138,9 @@ function createOptionsForInProgress() {
   emptyOption.className = 'option-empty'
   inProgressSelect.appendChild(emptyOption);
 
-  const availableToInProgressTasks = readyTasks.filter(task => !inProgressTasks.includes(task.id))
+  
+  const availableToInProgressTasks = readyTasks.filter(task => !inProgressTasks.some(inProgressTask => inProgressTask.id === task.id))
+  console.log('availableToInProgressTasks:', availableToInProgressTasks)
   availableToInProgressTasks.forEach(taskInfo => {
     const option = document.createElement('option')
     option.className = "option-item";
@@ -142,16 +152,38 @@ function createOptionsForInProgress() {
   document.querySelector('#add-task-inProgress').disabled = false;
 }
 
+function createOptionsForFinished() {
+  finishedSelect.innerHTML = '';
+
+  const emptyOption = document.createElement('option');
+  emptyOption.textContent = 'Выберите вариант';
+  emptyOption.className = 'option-empty'
+  finishedSelect.appendChild(emptyOption);
+
+  const availableToInfinishedTasks = inProgressTasks.filter(task => !finishedTasks.some(finishedTask => finishedTask.id === task.id))
+  availableToInfinishedTasks.forEach(taskInfo => {
+    const option = document.createElement('option')
+    option.className = "option-item";
+    option.textContent = taskInfo.title;
+    option.id = taskInfo.id;
+    finishedSelect.appendChild(option);
+  });
+
+  document.querySelector('#add-task-finished').disabled = false;
+}
+
 document.addEventListener('click', (e) => {
   const addBacklog = e.target.closest("#add-task-backlog");
   const submitBacklog = e.target.closest("#submit-backlog");
   const addReady = e.target.closest("#add-task-ready");
   const addInProgress = e.target.closest("#add-task-inProgress");
+  const addFinished = e.target.closest("#add-task-finished");
   
   if (addBacklog) addToBacklog()
   else if (submitBacklog) saveToBacklog();
   else if (addReady) addToReady();
   else if (addInProgress) addToInProgress();
+  else if (addFinished) addToFinished();
 });
 
 readySelect.addEventListener('change', (e) => {
@@ -164,7 +196,6 @@ readySelect.addEventListener('change', (e) => {
     title: selectedTask,
     id: selectedTaskId
   };
-  
   readyTasks.push(taskInfo);
   console.log('readyTasks:', readyTasks)
   addTaskToReadyContainer(selectedTask, selectedTaskId);
@@ -181,14 +212,40 @@ inProgressSelect.addEventListener('change', (e) => {
   const selectedTask = selectedOption.value;
   const selectedTaskId = selectedOption.id;
   
-  addTaskToInProgressContainer(selectedTask);
   inProgressSelect.removeChild(selectedOption);
-  inProgressTasks.push(selectedTaskId)
+  let taskInfo = {
+    title: selectedTask,
+    id: selectedTaskId
+  };
+  inProgressTasks.push(taskInfo);
+  console.log("inProgressTasks:", inProgressTasks)
+  addTaskToInProgressContainer(selectedTask, selectedTaskId);
   
   if (inProgressSelect.querySelectorAll('.option-item').length === 0) {
     document.querySelector('#add-task-inProgress').disabled = true;
   } else {
     document.querySelector('#add-task-inProgress').disabled = false;
+  }
+});
+
+finishedSelect.addEventListener('change', (e) => {
+  const selectedOption = e.target.options[e.target.selectedIndex];
+  const selectedTask = selectedOption.value;
+  const selectedTaskId = selectedOption.id;
+  
+  finishedSelect.removeChild(selectedOption);
+  let taskInfo = {
+    title: selectedTask,
+    id: selectedTaskId
+  };
+  finishedTasks.push(taskInfo)
+  console.log("finishedTasks:", finishedTasks)
+  addTaskFinishedContainer(selectedTask, selectedTaskId);
+  
+  if (finishedSelect.querySelectorAll('.option-item').length === 0) {
+    document.querySelector('#add-task-finished').disabled = true;
+  } else {
+    document.querySelector('#add-task-finished').disabled = false;
   }
 });
 
@@ -204,10 +261,20 @@ function addTaskToReadyContainer(taskText, taskId) {
   createOptionsForInProgress();
 }
 
-function addTaskToInProgressContainer(taskText) {
+function addTaskToInProgressContainer(taskText, taskId) {
   let newTaskDiv = document.createElement('div');
   newTaskDiv.className = 'task'; 
   newTaskDiv.textContent = taskText;
   inProgressContainer.appendChild(newTaskDiv);
   inProgressSelectBlock.style.display = 'none';
+
+  createOptionsForFinished()
+}
+
+function addTaskFinishedContainer(taskText, taskId) {
+  let newTaskDiv = document.createElement('div');
+  newTaskDiv.className = 'task'; 
+  newTaskDiv.textContent = taskText;
+  finishedContainer.appendChild(newTaskDiv);
+  finishedSelectBlock.style.display = 'none';
 }
