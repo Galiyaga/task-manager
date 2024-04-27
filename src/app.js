@@ -201,7 +201,8 @@ readySelect.addEventListener('change', (e) => {
     backlogTask.remove();
   }
   backlogTasks.splice((backlogTasks.findIndex(task => task.id === taskInfo)), 1)
-  addTaskToReadyContainer(selectedTask, selectedTaskId);
+  addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);
+  createOptionsForInProgress();
   
   if (readySelect.querySelectorAll('.option-item').length === 0) {
     document.querySelector('#add-task-ready').disabled = true;
@@ -227,7 +228,8 @@ inProgressSelect.addEventListener('change', (e) => {
     readyTask.remove();
   }
   readyTasks.splice((readyTasks.findIndex(task => task.id === taskInfo)), 1)
-  addTaskToInProgressContainer(selectedTask, selectedTaskId);
+  addTaskToContainer(selectedTask, selectedTaskId, inProgressContainer, inProgressSelectBlock);
+  createOptionsForFinished()
   
   if (inProgressSelect.querySelectorAll('.option-item').length === 0) {
     document.querySelector('#add-task-inProgress').disabled = true;
@@ -252,7 +254,7 @@ finishedSelect.addEventListener('change', (e) => {
     inProgressTask.remove();
   }
   inProgressTasks.splice((inProgressTasks.findIndex(task => task.id === taskInfo)), 1)
-  addTaskFinishedContainer(selectedTask, selectedTaskId);
+  addTaskToContainer(selectedTask, selectedTaskId, finishedContainer, finishedSelectBlock);
   
   if (finishedSelect.querySelectorAll('.option-item').length === 0) {
     document.querySelector('#add-task-finished').disabled = true;
@@ -262,33 +264,30 @@ finishedSelect.addEventListener('change', (e) => {
 });
 
 
-function addTaskToReadyContainer(taskText, taskId) {
+function addTaskToContainer(taskText, taskId, container, selectBlock) {
   let newTaskDiv = document.createElement('div');
   newTaskDiv.className = 'task'; 
   newTaskDiv.textContent = taskText;
   newTaskDiv.id = taskId;
-  readyContainer.appendChild(newTaskDiv);
-  readySelectBlock.style.display = 'none';
-  
-  createOptionsForInProgress();
+  container.appendChild(newTaskDiv);
+  selectBlock.style.display = 'none';
 }
 
-function addTaskToInProgressContainer(taskText, taskId) {
-  let newTaskDiv = document.createElement('div');
-  newTaskDiv.className = 'task'; 
-  newTaskDiv.textContent = taskText;
-  newTaskDiv.id = taskId;
-  inProgressContainer.appendChild(newTaskDiv);
-  inProgressSelectBlock.style.display = 'none';
+// function addTaskToInProgressContainer(taskText, taskId) {
+//   let newTaskDiv = document.createElement('div');
+//   newTaskDiv.className = 'task'; 
+//   newTaskDiv.textContent = taskText;
+//   newTaskDiv.id = taskId;
+//   inProgressContainer.appendChild(newTaskDiv);
+//   inProgressSelectBlock.style.display = 'none';
 
-  createOptionsForFinished()
-}
+// }
 
-function addTaskFinishedContainer(taskText, taskId) {
-  let newTaskDiv = document.createElement('div');
-  newTaskDiv.className = 'task'; 
-  newTaskDiv.textContent = taskText;
-  newTaskDiv.id = taskId;
-  finishedContainer.appendChild(newTaskDiv);
-  finishedSelectBlock.style.display = 'none';
-}
+// function addTaskFinishedContainer(taskText, taskId) {
+//   let newTaskDiv = document.createElement('div');
+//   newTaskDiv.className = 'task'; 
+//   newTaskDiv.textContent = taskText;
+//   newTaskDiv.id = taskId;
+//   finishedContainer.appendChild(newTaskDiv);
+//   finishedSelectBlock.style.display = 'none';
+// }
