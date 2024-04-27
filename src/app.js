@@ -79,7 +79,6 @@ function saveToBacklog() {
     };
 
     backlogTasks.push(taskInfo);
-    console.log('backlogTasks:', backlogTasks)
 
     let newTaskDiv = document.createElement("div");
     newTaskDiv.className = "task";
@@ -120,7 +119,6 @@ function createOptionsForReady() {
 
   const availableToreadyOptions = backlogTasks.filter(task =>!readyTasks.some(readyTask => readyTask.id === task.id)
    );
-  console.log("availableToreadyOptions:", availableToreadyOptions)
   availableToreadyOptions.forEach(taskInfo => {
     const option = document.createElement('option')
     option.className = "option-item";
@@ -142,7 +140,6 @@ function createOptionsForInProgress() {
 
   
   const availableToInProgressTasks = readyTasks.filter(task => !inProgressTasks.some(inProgressTask => inProgressTask.id === task.id))
-  console.log('availableToInProgressTasks:', availableToInProgressTasks)
   availableToInProgressTasks.forEach(taskInfo => {
     const option = document.createElement('option')
     option.className = "option-item";
@@ -199,7 +196,11 @@ readySelect.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   readyTasks.push(taskInfo);
-  console.log('readyTasks:', readyTasks)
+  let backlogTask = document.querySelector("#backlog-task-container .task")
+  if(backlogTask.id === taskInfo.id) {
+    backlogTask.remove();
+  }
+  backlogTasks.splice((backlogTasks.findIndex(task => task.id === taskInfo)), 1)
   addTaskToReadyContainer(selectedTask, selectedTaskId);
   
   if (readySelect.querySelectorAll('.option-item').length === 0) {
@@ -220,7 +221,12 @@ inProgressSelect.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   inProgressTasks.push(taskInfo);
-  console.log("inProgressTasks:", inProgressTasks)
+  
+  let readyTask = document.querySelector("#ready-task-container .task")
+  if(readyTask.id === taskInfo.id) {
+    readyTask.remove();
+  }
+  readyTasks.splice((readyTasks.findIndex(task => task.id === taskInfo)), 1)
   addTaskToInProgressContainer(selectedTask, selectedTaskId);
   
   if (inProgressSelect.querySelectorAll('.option-item').length === 0) {
@@ -241,7 +247,11 @@ finishedSelect.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   finishedTasks.push(taskInfo)
-  console.log("finishedTasks:", finishedTasks)
+  let inProgressTask = document.querySelector("#inProgress-task-container .task")
+  if(inProgressTask.id === taskInfo.id) {
+    inProgressTask.remove();
+  }
+  inProgressTasks.splice((inProgressTasks.findIndex(task => task.id === taskInfo)), 1)
   addTaskFinishedContainer(selectedTask, selectedTaskId);
   
   if (finishedSelect.querySelectorAll('.option-item').length === 0) {
@@ -267,6 +277,7 @@ function addTaskToInProgressContainer(taskText, taskId) {
   let newTaskDiv = document.createElement('div');
   newTaskDiv.className = 'task'; 
   newTaskDiv.textContent = taskText;
+  newTaskDiv.id = taskId;
   inProgressContainer.appendChild(newTaskDiv);
   inProgressSelectBlock.style.display = 'none';
 
@@ -277,6 +288,7 @@ function addTaskFinishedContainer(taskText, taskId) {
   let newTaskDiv = document.createElement('div');
   newTaskDiv.className = 'task'; 
   newTaskDiv.textContent = taskText;
+  newTaskDiv.id = taskId;
   finishedContainer.appendChild(newTaskDiv);
   finishedSelectBlock.style.display = 'none';
 }
