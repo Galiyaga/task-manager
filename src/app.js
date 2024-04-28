@@ -196,11 +196,13 @@ readySelect.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   readyTasks.push(taskInfo);
-  let backlogTask = document.querySelector("#backlog-task-container .task")
-  if(backlogTask.id === taskInfo.id) {
-    backlogTask.remove();
-  }
-  backlogTasks.splice((backlogTasks.findIndex(task => task.id === taskInfo)), 1)
+  const backlogTask = document.querySelector("#backlog-task-container .task");
+  deleteTask(backlogTask, taskInfo, backlogTasks)
+  // if (!document.body.contains(backlogTask)) {
+  //   console.log('backlogTask Элемент успешно удалён из DOM');
+  // } else {
+  //   console.log('backlogTask Элемент не удалён из DOM');
+  // }
   addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);
   createOptionsForInProgress();
   
@@ -222,12 +224,13 @@ inProgressSelect.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   inProgressTasks.push(taskInfo);
-  
-  let readyTask = document.querySelector("#ready-task-container .task")
-  if(readyTask.id === taskInfo.id) {
-    readyTask.remove();
-  }
-  readyTasks.splice((readyTasks.findIndex(task => task.id === taskInfo)), 1)
+  const readyTask = document.querySelector("#ready-task-container .task");
+  deleteTask(readyTask, taskInfo, readyTasks)
+  // if (!document.body.contains(readyTask)) {
+  //   console.log('readyTask Элемент успешно удалён из DOM');
+  // } else {
+  //   console.log('readyTask Элемент не удалён из DOM');
+  // }
   addTaskToContainer(selectedTask, selectedTaskId, inProgressContainer, inProgressSelectBlock);
   createOptionsForFinished()
   
@@ -248,12 +251,14 @@ finishedSelect.addEventListener('change', (e) => {
     title: selectedTask,
     id: selectedTaskId
   };
-  finishedTasks.push(taskInfo)
-  let inProgressTask = document.querySelector("#inProgress-task-container .task")
-  if(inProgressTask.id === taskInfo.id) {
-    inProgressTask.remove();
-  }
-  inProgressTasks.splice((inProgressTasks.findIndex(task => task.id === taskInfo)), 1)
+  finishedTasks.push(taskInfo);
+  const inProgressTask = document.querySelector("#inProgress-task-container .task");
+  deleteTask(inProgressTask, taskInfo, inProgressTasks);
+  // if (!document.body.contains(inProgressTask)) {
+  //   console.log('inProgressTask Элемент успешно удалён из DOM');
+  // } else {
+  //   console.log('inProgressTask Элемент не удалён из DOM');
+  // }
   addTaskToContainer(selectedTask, selectedTaskId, finishedContainer, finishedSelectBlock);
   
   if (finishedSelect.querySelectorAll('.option-item').length === 0) {
@@ -273,21 +278,9 @@ function addTaskToContainer(taskText, taskId, container, selectBlock) {
   selectBlock.style.display = 'none';
 }
 
-// function addTaskToInProgressContainer(taskText, taskId) {
-//   let newTaskDiv = document.createElement('div');
-//   newTaskDiv.className = 'task'; 
-//   newTaskDiv.textContent = taskText;
-//   newTaskDiv.id = taskId;
-//   inProgressContainer.appendChild(newTaskDiv);
-//   inProgressSelectBlock.style.display = 'none';
-
-// }
-
-// function addTaskFinishedContainer(taskText, taskId) {
-//   let newTaskDiv = document.createElement('div');
-//   newTaskDiv.className = 'task'; 
-//   newTaskDiv.textContent = taskText;
-//   newTaskDiv.id = taskId;
-//   finishedContainer.appendChild(newTaskDiv);
-//   finishedSelectBlock.style.display = 'none';
-// }
+function deleteTask(task, taskInfo, array) {
+  if(task.id === taskInfo.id) {
+    task.remove();
+  }
+  array.splice((array.findIndex(task => task.id === taskInfo)), 1)
+}
