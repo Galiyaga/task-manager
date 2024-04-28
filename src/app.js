@@ -199,13 +199,11 @@ readySelect.addEventListener('change', (e) => {
   readyTasks.push(taskInfo);
   const backlogTask = document.querySelector("#backlog-task-container .task");
   deleteTask(backlogTask, taskInfo, backlogTasks)
-  if (!document.body.contains(backlogTask)) {
-    console.log('backlogTask Элемент успешно удалён из DOM');
-  } else {
-    console.log('backlogTask Элемент не удалён из DOM');
-  }
-  console.log('backlogTasks', backlogTasks)
-  console.log('readyTasks', readyTasks)
+  // if (!document.body.contains(backlogTask)) {
+  //   console.log('backlogTask Элемент успешно удалён из DOM');
+  // } else {
+  //   console.log('backlogTask Элемент не удалён из DOM');
+  // }
   addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);
   
   if (readySelect.querySelectorAll('.option-item').length === 0) {
@@ -290,37 +288,62 @@ function deleteTask(task, taskInfo, array) {
 }
 
 //drag and drop
-/*window.onload = function() {
+window.onload = function() {
   dragula(
     [ backlogContainer,
       readyContainer,
       inProgressContainer,
       finishedContainer
-    ], 
+    ],
+    {
+      revertOnSpill: true,
+    }
 )
 .on('drag', function (el) {
   // console.log("Перетаскиваем блок")
 }).on('drop', function (el) {
     let searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
-    console.log('el.id', el.id)
     removeObjectFromArrays(el.id, searchArrays);
-    console.log('backlogTasks', backlogTasks)
-    console.log('readyTasks', readyTasks)
+    let containerId = el.parentNode.id;
 
-    const taskInfo = backlogTasks.find(task => task.id === el.id) ||
-    readyTasks.find(task => task.id === el.id) ||
-    inProgressTasks.find(task => task.id === el.id) || finishedTasks.find(task => task.id === el.id);
-    if (taskInfo) {
-      let taskObject = {
-        title: taskInfo.textContent,
-        id: taskInfo.id
-      };
-      let containerName = el.parentNode;
-      let startIndex = el.parentNode.length - 5;
-      let arrayName = containerName.slice(startIndex);
-      
-      console.log("Блок помещён в контейнер")
-      window[`${arrayName}Tasks`].push(taskObject);
+    // Создаем объект задачи
+    let taskObject = {
+      title: el.textContent,
+      id: el.id
+    };
+
+    // Определяем, в какой массив добавить задачу, на основе id контейнера
+    switch (containerId) {
+        case 'backlogContainer':
+            backlogTasks.push(taskObject);
+            break;
+        case 'readyContainer':
+            readyTasks.push(taskObject);
+            break;
+        case 'inProgressContainer':
+            inProgressTasks.push(taskObject);
+            break;
+        case 'finishedContainer':
+            finishedTasks.push(taskObject);
+            break;
+        default:
+            console.log('Контейнер не распознан');
+    }
+
+    // Удаляем объект из исходного массива, если он там есть
+    let searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
+    removeObjectFromArrays(el.id, searchArrays);
+});
+    // const taskInfo = backlogTasks.find(task => task.id === el.id) ||
+    // readyTasks.find(task => task.id === el.id) ||
+    // inProgressTasks.find(task => task.id === el.id) || finishedTasks.find(task => task.id === el.id);
+    let taskObject = {
+      title: el.textContent,
+      id: el.id
+    if (el) {
+    
+    };
+    
     }
 }).on('over', function (el, container) {
   // console.log("Блок над контейнером")
@@ -339,4 +362,3 @@ function removeObjectFromArrays(id, arrays) { // Изменено на id
       }
   })
 }};
-*/
