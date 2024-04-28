@@ -46,6 +46,7 @@ function renderTaskBoard() {
 const readySelectBlock = document.querySelector('#ready-select-block');
 const inProgressSelectBlock = document.querySelector('#inProgress-select-block');
 const finishedSelectBlock = document.querySelector('#finished-select-block');
+const backlogContainer = document.querySelector('#backlog-task-container');
 const readyContainer = document.querySelector('#ready-task-container');
 const inProgressContainer = document.querySelector('#inProgress-task-container');
 const finishedContainer = document.querySelector('#finished-task-container');
@@ -198,13 +199,14 @@ readySelect.addEventListener('change', (e) => {
   readyTasks.push(taskInfo);
   const backlogTask = document.querySelector("#backlog-task-container .task");
   deleteTask(backlogTask, taskInfo, backlogTasks)
-  // if (!document.body.contains(backlogTask)) {
-  //   console.log('backlogTask Элемент успешно удалён из DOM');
-  // } else {
-  //   console.log('backlogTask Элемент не удалён из DOM');
-  // }
+  if (!document.body.contains(backlogTask)) {
+    console.log('backlogTask Элемент успешно удалён из DOM');
+  } else {
+    console.log('backlogTask Элемент не удалён из DOM');
+  }
+  console.log('backlogTasks', backlogTasks)
+  console.log('readyTasks', readyTasks)
   addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);
-  createOptionsForInProgress();
   
   if (readySelect.querySelectorAll('.option-item').length === 0) {
     document.querySelector('#add-task-ready').disabled = true;
@@ -232,7 +234,6 @@ inProgressSelect.addEventListener('change', (e) => {
   //   console.log('readyTask Элемент не удалён из DOM');
   // }
   addTaskToContainer(selectedTask, selectedTaskId, inProgressContainer, inProgressSelectBlock);
-  createOptionsForFinished()
   
   if (inProgressSelect.querySelectorAll('.option-item').length === 0) {
     document.querySelector('#add-task-inProgress').disabled = true;
@@ -276,11 +277,66 @@ function addTaskToContainer(taskText, taskId, container, selectBlock) {
   newTaskDiv.id = taskId;
   container.appendChild(newTaskDiv);
   selectBlock.style.display = 'none';
+
+  createOptionsForInProgress();
+  createOptionsForFinished();
 }
 
 function deleteTask(task, taskInfo, array) {
   if(task.id === taskInfo.id) {
     task.remove();
   }
-  array.splice((array.findIndex(task => task.id === taskInfo)), 1)
+  array.splice((array.findIndex(task => task.id === taskInfo.id)), 1)
 }
+
+//drag and drop
+/*window.onload = function() {
+  dragula(
+    [ backlogContainer,
+      readyContainer,
+      inProgressContainer,
+      finishedContainer
+    ], 
+)
+.on('drag', function (el) {
+  // console.log("Перетаскиваем блок")
+}).on('drop', function (el) {
+    let searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
+    console.log('el.id', el.id)
+    removeObjectFromArrays(el.id, searchArrays);
+    console.log('backlogTasks', backlogTasks)
+    console.log('readyTasks', readyTasks)
+
+    const taskInfo = backlogTasks.find(task => task.id === el.id) ||
+    readyTasks.find(task => task.id === el.id) ||
+    inProgressTasks.find(task => task.id === el.id) || finishedTasks.find(task => task.id === el.id);
+    if (taskInfo) {
+      let taskObject = {
+        title: taskInfo.textContent,
+        id: taskInfo.id
+      };
+      let containerName = el.parentNode;
+      let startIndex = el.parentNode.length - 5;
+      let arrayName = containerName.slice(startIndex);
+      
+      console.log("Блок помещён в контейнер")
+      window[`${arrayName}Tasks`].push(taskObject);
+    }
+}).on('over', function (el, container) {
+  // console.log("Блок над контейнером")
+}).on('out', function (el, container) {
+  // console.log("Блок вышел из контейнера")
+});
+
+function removeObjectFromArrays(id, arrays) { // Изменено на id
+  arrays.forEach(function(array) {
+      let index = array.findIndex(function(item) {
+        return item.id === id; // Сравниваем item.id с переданным id
+      });
+      if (index !== -1) {
+        array.splice(index, 1);
+        console.log('Объект удалён из массива');
+      }
+  })
+}};
+*/
