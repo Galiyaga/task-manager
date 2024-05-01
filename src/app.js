@@ -288,77 +288,77 @@ function deleteTask(task, taskInfo, array) {
 }
 
 //drag and drop
-window.onload = function() {
-  dragula(
-    [ backlogContainer,
-      readyContainer,
-      inProgressContainer,
-      finishedContainer
-    ],
-    {
-      revertOnSpill: true,
-    }
+
+dragula(
+  [ backlogContainer,
+    readyContainer,
+    inProgressContainer,
+    finishedContainer
+  ],
+  {
+    moves: function (el, source, handle, sibling) {
+      return true; // по умолчанию элементы всегда можно перетаскивать
+    },
+    accepts: function (el, target, source, sibling) {
+      return true; // по умолчанию элементы могут быть помещены в любой из `контейнеров`
+    },
+    invalid: function (el, handle) {
+      return false; // не запрещайте инициировать какие-либо перетаскивания по умолчанию
+    },
+    
+    revertOnSpill: true,
+  }
 )
 .on('drag', function (el) {
-  // console.log("Перетаскиваем блок")
+// console.log("Перетаскиваем блок")
 }).on('drop', function (el) {
-    let searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
-    removeObjectFromArrays(el.id, searchArrays);
-    let containerId = el.parentNode.id;
-
-    // Создаем объект задачи
-    let taskObject = {
-      title: el.textContent,
-      id: el.id
-    };
-
-    // Определяем, в какой массив добавить задачу, на основе id контейнера
-    switch (containerId) {
-        case 'backlogContainer':
-            backlogTasks.push(taskObject);
-            break;
-        case 'readyContainer':
-            readyTasks.push(taskObject);
-            break;
-        case 'inProgressContainer':
-            inProgressTasks.push(taskObject);
-            break;
-        case 'finishedContainer':
-            finishedTasks.push(taskObject);
-            break;
-        default:
-            console.log('Контейнер не распознан');
-    }
-
-    // Удаляем объект из исходного массива, если он там есть
-    let searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
-    removeObjectFromArrays(el.id, searchArrays);
-});
-    // const taskInfo = backlogTasks.find(task => task.id === el.id) ||
-    // readyTasks.find(task => task.id === el.id) ||
-    // inProgressTasks.find(task => task.id === el.id) || finishedTasks.find(task => task.id === el.id);
-    let taskObject = {
-      title: el.textContent,
-      id: el.id
-    if (el) {
-    
-    };
-    
-    }
+let searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
+removeObjectFromArrays(el.id, searchArrays);
+addObjectToArray(el);
+console.log('backlogTasks', backlogTasks)
+console.log('readyTasks', readyTasks)
 }).on('over', function (el, container) {
-  // console.log("Блок над контейнером")
+
 }).on('out', function (el, container) {
-  // console.log("Блок вышел из контейнера")
+// console.log("Блок вышел из контейнера")
 });
 
-function removeObjectFromArrays(id, arrays) { // Изменено на id
-  arrays.forEach(function(array) {
-      let index = array.findIndex(function(item) {
-        return item.id === id; // Сравниваем item.id с переданным id
-      });
-      if (index !== -1) {
-        array.splice(index, 1);
-        console.log('Объект удалён из массива');
-      }
+function removeObjectFromArrays(id, arrays) { 
+arrays.forEach(function(array) {
+    let index = array.findIndex(function(item) {
+      return item.id === id; 
+    });
+    if (index !== -1) {
+      array.splice(index, 1);
+      console.log('Объект удалён из массива');
+    }
+})
+}
+
+function addObjectToArray(el) {
+  let containerId = el.parentNode.id;
+  let taskObject = {
+  title: el.textContent,
+  id: el.id
+};
+
+switch (containerId) {
+  case 'backlog-task-container': backlogTasks.push(taskObject);
+  break;
+  case 'ready-task-container': readyTasks.push(taskObject);
+  break;
+  case 'inProgress-task-container': inProgressTasks.push(taskObject);
+  break;
+  case 'finished-task-container': finishedTasks.push(taskObject);
+  break;
+  default: console.log('Контейнер не распознан');
+}
+
+const optionItems = document.querySelectorAll('.option-item');
+  optionItems.forEach(option => {
+    if (option.id === taskObject.id) {
+      option.remove();
+    }
   })
-}};
+}
+
