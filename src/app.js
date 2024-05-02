@@ -290,41 +290,56 @@ function deleteTask(task, taskInfo, array) {
 //drag and drop
 
 dragula(
-  [ backlogContainer,
-    readyContainer,
-    inProgressContainer,
-    finishedContainer
-  ],
-  {
-    moves: function (el, source, handle, sibling) {
-      return true; // по умолчанию элементы всегда можно перетаскивать
-    },
-    accepts: function (el, target, source, sibling) {
-      return true; // по умолчанию элементы могут быть помещены в любой из `контейнеров`
-    },
-    invalid: function (el, handle) {
-      return false; // не запрещайте инициировать какие-либо перетаскивания по умолчанию
-    },
-    
-    revertOnSpill: true,
-  }
+[ backlogContainer,
+  readyContainer,
+  inProgressContainer,
+  finishedContainer
+],
+{
+  moves: function (el, source, handle, sibling) {
+    return true; // по умолчанию элементы всегда можно перетаскивать
+  },
+  accepts: function (el, target, source, sibling) {
+    return true; // по умолчанию элементы могут быть помещены в любой из `контейнеров`
+  },
+  invalid: function (el, handle) {
+    return false; // не запрещайте инициировать какие-либо перетаскивания по умолчанию
+  },
+  
+  revertOnSpill: true,
+}
 )
 .on('drag', function (el) {
 // console.log("Перетаскиваем блок")
+
 }).on('drop', function (el) {
 let searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
 removeObjectFromArrays(el.id, searchArrays);
 addObjectToArray(el);
-console.log('backlogTasks', backlogTasks)
-console.log('readyTasks', readyTasks)
+
+setTimeout(() => {
+  if (areAllSelectsEmpty()) {
+    // Дизейблить кнопки
+    document.querySelector('#add-task-ready').disabled = true;
+    document.querySelector('#add-task-inProgress').disabled = true;
+    document.querySelector('#add-task-finished').disabled = true;
+  } else {
+    // Разблокировать кнопки
+    document.querySelector('#add-task-ready').disabled = false;
+    document.querySelector('#add-task-inProgress').disabled = false;
+    document.querySelector('#add-task-finished').disabled = false;
+  }
+}, 0);
 }).on('over', function (el, container) {
+// console.log("Блок над контейнером")
 
 }).on('out', function (el, container) {
 // console.log("Блок вышел из контейнера")
+
 });
 
-function removeObjectFromArrays(id, arrays) { 
-arrays.forEach(function(array) {
+  function removeObjectFromArrays(id, arrays) { 
+  arrays.forEach(function(array) {
     let index = array.findIndex(function(item) {
       return item.id === id; 
     });
@@ -332,11 +347,12 @@ arrays.forEach(function(array) {
       array.splice(index, 1);
       console.log('Объект удалён из массива');
     }
-})
-}
+  })
+  }
 
 function addObjectToArray(el) {
-  let containerId = el.parentNode.id;
+  let container = el.parentNode;
+  let containerId = container.id;
   let taskObject = {
   title: el.textContent,
   id: el.id
@@ -354,11 +370,17 @@ switch (containerId) {
   default: console.log('Контейнер не распознан');
 }
 
-const optionItems = document.querySelectorAll('.option-item');
+  const optionItems = document.querySelectorAll('.option-item');
   optionItems.forEach(option => {
     if (option.id === taskObject.id) {
       option.remove();
     }
   })
+}
+
+function areAllSelectsEmpty() {
+  const selects = [readySelect, inProgressSelect, finishedSelect];
+  console.log('Checking select elements:', selects);
+  return selects.every(select => select.querySelectorAll('.option-item').length === 0);
 }
 
