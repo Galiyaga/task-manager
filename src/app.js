@@ -110,6 +110,10 @@ function addToFinished() {
   finishedContainer.appendChild(finishedSelectBlock);
 }
 
+const addReadyDisabled =  document.querySelector('#add-task-ready');
+const addInProgressDisabled =  document.querySelector('#add-task-inProgress');
+const addFinishedDisabled =  document.querySelector('#add-task-finished');
+
 function createOptionsForReady() {
   readySelect.innerHTML = '';
 
@@ -128,7 +132,7 @@ function createOptionsForReady() {
     readySelect.appendChild(option);
   });
 
-  document.querySelector('#add-task-ready').disabled = false;
+  addReadyDisabled.disabled = false;
 }
 
 function createOptionsForInProgress() {
@@ -139,7 +143,6 @@ function createOptionsForInProgress() {
   emptyOption.className = 'option-empty'
   inProgressSelect.appendChild(emptyOption);
 
-  
   const availableToInProgressTasks = readyTasks.filter(task => !inProgressTasks.some(inProgressTask => inProgressTask.id === task.id))
   availableToInProgressTasks.forEach(taskInfo => {
     const option = document.createElement('option')
@@ -149,7 +152,7 @@ function createOptionsForInProgress() {
     inProgressSelect.appendChild(option);
   });
 
-  document.querySelector('#add-task-inProgress').disabled = false;
+  addInProgressDisabled.disabled = false;
 }
 
 function createOptionsForFinished() {
@@ -169,7 +172,7 @@ function createOptionsForFinished() {
     finishedSelect.appendChild(option);
   });
 
-  document.querySelector('#add-task-finished').disabled = false;
+  addFinishedDisabled.disabled = false;
 }
 
 document.addEventListener('click', (e) => {
@@ -207,9 +210,9 @@ readySelect.addEventListener('change', (e) => {
   addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);
   
   if (readySelect.querySelectorAll('.option-item').length === 0) {
-    document.querySelector('#add-task-ready').disabled = true;
+    addReadyDisabled.disabled = true;
   } else {
-    document.querySelector('#add-task-ready').disabled = false;
+    addReadyDisabled.disabled = false;
   }
 });
 
@@ -217,7 +220,7 @@ inProgressSelect.addEventListener('change', (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
   const selectedTask = selectedOption.value;
   const selectedTaskId = selectedOption.id;
-  
+
   inProgressSelect.removeChild(selectedOption);
   let taskInfo = {
     title: selectedTask,
@@ -232,11 +235,11 @@ inProgressSelect.addEventListener('change', (e) => {
   //   console.log('readyTask Элемент не удалён из DOM');
   // }
   addTaskToContainer(selectedTask, selectedTaskId, inProgressContainer, inProgressSelectBlock);
-  
+
   if (inProgressSelect.querySelectorAll('.option-item').length === 0) {
-    document.querySelector('#add-task-inProgress').disabled = true;
+    addInProgressDisabled.disabled = true;
   } else {
-    document.querySelector('#add-task-inProgress').disabled = false;
+    addInProgressDisabled.disabled = false;
   }
 });
 
@@ -261,9 +264,9 @@ finishedSelect.addEventListener('change', (e) => {
   addTaskToContainer(selectedTask, selectedTaskId, finishedContainer, finishedSelectBlock);
   
   if (finishedSelect.querySelectorAll('.option-item').length === 0) {
-    document.querySelector('#add-task-finished').disabled = true;
+    addFinishedDisabled.disabled = true;
   } else {
-    document.querySelector('#add-task-finished').disabled = false;
+    addFinishedDisabled.disabled = false;
   }
 });
 
@@ -317,19 +320,21 @@ let searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
 removeObjectFromArrays(el.id, searchArrays);
 addObjectToArray(el);
 
-setTimeout(() => {
-  if (areAllSelectsEmpty()) {
-    // Дизейблить кнопки
-    document.querySelector('#add-task-ready').disabled = true;
-    document.querySelector('#add-task-inProgress').disabled = true;
-    document.querySelector('#add-task-finished').disabled = true;
-  } else {
-    // Разблокировать кнопки
-    document.querySelector('#add-task-ready').disabled = false;
-    document.querySelector('#add-task-inProgress').disabled = false;
-    document.querySelector('#add-task-finished').disabled = false;
-  }
-}, 0);
+// const allEmpty = [backlogTasks, readyTasks, inProgressTasks].every(array => !array.length)
+//
+//   console.log('allEmpty: ', allEmpty)
+//
+// if (allEmpty) {
+//   // Дизейблить кнопки
+//   addReadyDisabled.disabled = true;
+//   addInProgressDisabled.disabled = true;
+//   addFinishedDisabled.disabled = true;
+// } else {
+//   // Разблокировать кнопки
+//   addReadyDisabled.disabled = false;
+//   addInProgressDisabled.disabled = false;
+//   addFinishedDisabled.disabled = false;
+// }
 }).on('over', function (el, container) {
 // console.log("Блок над контейнером")
 
@@ -376,11 +381,5 @@ switch (containerId) {
       option.remove();
     }
   })
-}
-
-function areAllSelectsEmpty() {
-  const selects = [readySelect, inProgressSelect, finishedSelect];
-  console.log('Checking select elements:', selects);
-  return selects.every(select => select.querySelectorAll('.option-item').length === 0);
 }
 
