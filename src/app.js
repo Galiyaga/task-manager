@@ -46,18 +46,51 @@ function renderTaskBoard() {
 const readySelectBlock = document.querySelector('#ready-select-block');
 const inProgressSelectBlock = document.querySelector('#inProgress-select-block');
 const finishedSelectBlock = document.querySelector('#finished-select-block');
-const backlogContainer = document.querySelector('#backlog-task-container');
-const readyContainer = document.querySelector('#ready-task-container');
-const inProgressContainer = document.querySelector('#inProgress-task-container');
-const finishedContainer = document.querySelector('#finished-task-container');
+
 const readySelect = document.querySelector("#ready-select");
 const inProgressSelect = document.querySelector("#inProgress-select");
 const finishedSelect = document.querySelector("#finished-select");
+
+const backlogContainer = document.querySelector('#backlog-task-container');
+const readyContainer = document.querySelector('#ready-task-container');
+const inProgressContainer = document.querySelector('#in-progress-task-container');
+const finishedContainer = document.querySelector('#finished-task-container');
+
+// Buttons
+// TODO: переимпеновать без disabled
+const addBacklogDisabled =  document.querySelector('#add-task-backlog');
+const addReadyDisabled =  document.querySelector('#add-task-ready');
+const addInProgressDisabled =  document.querySelector('#add-task-inProgress');
+const addFinishedDisabled =  document.querySelector('#add-task-finished');
 
 const backlogTasks = [];
 const readyTasks = [];
 const inProgressTasks= [];
 const finishedTasks= [];
+
+const groupedData = {
+  'backlog-task-container': {
+    html: backlogContainer,
+    tasks: backlogTasks,
+    button: addBacklogDisabled
+  },
+  'ready-task-container':  {
+    html: readyContainer,
+    tasks: readyTasks,
+    button: addReadyDisabled
+  },
+  'in-progress-task-container': {
+    html: inProgressContainer,
+    tasks: inProgressTasks,
+    button: addInProgressDisabled
+  },
+  'finished-task-container': {
+    html: finishedContainer,
+    tasks: finishedTasks,
+    button: addFinishedDisabled
+  }
+}
+
 // Логика добавления в колонки
 function addToBacklog () {
   const addBacklog = document.querySelector("#add-task-backlog");
@@ -109,10 +142,6 @@ function addToFinished() {
   finishedSelectBlock.style.display = 'block';
   finishedContainer.appendChild(finishedSelectBlock);
 }
-
-const addReadyDisabled =  document.querySelector('#add-task-ready');
-const addInProgressDisabled =  document.querySelector('#add-task-inProgress');
-const addFinishedDisabled =  document.querySelector('#add-task-finished');
 
 function createOptionsForReady() {
   readySelect.innerHTML = '';
@@ -254,7 +283,7 @@ finishedSelect.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   finishedTasks.push(taskInfo);
-  const inProgressTask = document.querySelector("#inProgress-task-container .task");
+  const inProgressTask = document.querySelector("#in-progress-task-container .task");
   deleteTask(inProgressTask, taskInfo, inProgressTasks);
   // if (!document.body.contains(inProgressTask)) {
   //   console.log('inProgressTask Элемент успешно удалён из DOM');
@@ -315,32 +344,20 @@ dragula(
 .on('drag', function (el) {
 // console.log("Перетаскиваем блок")
 
-}).on('drop', function (el) {
-let searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
-removeObjectFromArrays(el.id, searchArrays);
-addObjectToArray(el);
+}).on('drop', function (el, target, source) {
+  const searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
+  const sourceData = groupedData[source.id]
+  const targetData = groupedData[target.id]
 
-// const allEmpty = [backlogTasks, readyTasks, inProgressTasks].every(array => !array.length)
-//
-//   console.log('allEmpty: ', allEmpty)
-//
-// if (allEmpty) {
-//   // Дизейблить кнопки
-//   addReadyDisabled.disabled = true;
-//   addInProgressDisabled.disabled = true;
-//   addFinishedDisabled.disabled = true;
-// } else {
-//   // Разблокировать кнопки
-//   addReadyDisabled.disabled = false;
-//   addInProgressDisabled.disabled = false;
-//   addFinishedDisabled.disabled = false;
-// }
+  removeObjectFromArrays(el.id, searchArrays);
+  addObjectToArray(el);
+
+  targetData.button.disabled = !sourceData.tasks.length
 }).on('over', function (el, container) {
 // console.log("Блок над контейнером")
 
 }).on('out', function (el, container) {
 // console.log("Блок вышел из контейнера")
-
 });
 
   function removeObjectFromArrays(id, arrays) { 
@@ -368,7 +385,7 @@ switch (containerId) {
   break;
   case 'ready-task-container': readyTasks.push(taskObject);
   break;
-  case 'inProgress-task-container': inProgressTasks.push(taskObject);
+  case 'in-progress-task-container': inProgressTasks.push(taskObject);
   break;
   case 'finished-task-container': finishedTasks.push(taskObject);
   break;
