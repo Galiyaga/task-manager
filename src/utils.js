@@ -24,6 +24,7 @@ export const generateSimpleUser = function (User) {
 export const generateAdminUser = function (User) {
   generateUser(User, {
     login: 'admin',
-    password: '123'
+    password: '123',
+    admin: true
   })
 }

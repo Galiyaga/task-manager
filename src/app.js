@@ -29,7 +29,7 @@ loginForm.addEventListener("submit", function (e) {
 
 generateSimpleUser(User);
 generateAdminUser(User);
-checkForUsers()
+// checkForUsers()
 
 function checkForUsers() {
   const users = getFromStorage('users')
