@@ -4,7 +4,7 @@ import taskFieldTemplate from "./templates/taskField.html";
 import noAccessTemplate from "./templates/noAccess.html";
 import newTask from "./templates/newTask.html";
 import { User } from "./models/User";
-import {generateAdminUser, generateSimpleUser, getFromStorage} from "./utils";
+import {addToStorage, generateAdminUser, generateSimpleUser, getFromStorage} from "./utils";
 import { State } from "./state";
 import { authUser } from "./services/auth";
 import {Task} from "./models/Task"
@@ -27,13 +27,20 @@ loginForm.addEventListener("submit", function (e) {
   }
 });
 
-generateSimpleUser(User);
-generateAdminUser(User);
-// checkForUsers()
+checkForUsers()
 
 function checkForUsers() {
   const users = getFromStorage('users')
-  if (users.length) renderTaskBoard()
+  const currentUser = JSON.parse(localStorage.getItem('user'))
+
+  console.log('currentUser: ', currentUser)
+
+  if (!users.length) {
+    generateSimpleUser(User);
+    generateAdminUser(User);
+  }
+
+  if (currentUser) renderTaskBoard();
 }
 
 function renderTaskBoard() {
@@ -63,7 +70,7 @@ const addReadyDisabled =  document.querySelector('#add-task-ready');
 const addInProgressDisabled =  document.querySelector('#add-task-inProgress');
 const addFinishedDisabled =  document.querySelector('#add-task-finished');
 
-const backlogTasks = [];
+const backlogTasks = getFromStorage('backlogTasks');
 const readyTasks = [];
 const inProgressTasks= [];
 const finishedTasks= [];
@@ -103,16 +110,22 @@ function addToBacklog () {
   });
 }
 function saveToBacklog() {
+  const user = JSON.parse(localStorage.getItem('user'))
+
+  console.log('user: ', user)
+
   let inputValue = document.querySelector("#task-input").value;
   if (inputValue.length) {
     const newTask = new Task(inputValue);
 
     let taskInfo = {
       title: newTask.text,
-      id: newTask.id
+      id: newTask.id,
+      creator: user.login
     };
 
     backlogTasks.push(taskInfo);
+    addToStorage(taskInfo, 'backlogTasks')
 
     let newTaskDiv = document.createElement("div");
     newTaskDiv.className = "task";
