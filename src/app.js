@@ -64,7 +64,6 @@ const inProgressContainer = document.querySelector('#in-progress-task-container'
 const finishedContainer = document.querySelector('#finished-task-container');
 
 // Buttons
-// TODO: переимпеновать без disabled
 const addBacklog =  document.querySelector('#add-task-backlog');
 const addReady =  document.querySelector('#add-task-ready');
 const addInProgress =  document.querySelector('#add-task-inProgress');
@@ -109,6 +108,29 @@ function addToBacklog () {
     saveToBacklog();
   });
 }
+
+//TODO КНОПКА ENTER выдает ошибку
+function setupTaskInputHandlers() {
+  const taskInput = document.getElementById('task-input');
+
+  taskInput.removeEventListener('blur', handleBlur);
+  taskInput.removeEventListener('keydown', handleKeyDown);
+
+  function handleBlur() {
+    saveToBacklog();
+  }
+
+  function handleKeyDown(event) {
+    if (event.key === 'Enter') {
+      saveToBacklog();
+      event.preventDefault();
+    }
+  }
+
+  taskInput.addEventListener('blur', handleBlur);
+  taskInput.addEventListener('keydown', handleKeyDown);
+}
+
 function saveToBacklog() {
   const user = JSON.parse(localStorage.getItem('user'))
 
