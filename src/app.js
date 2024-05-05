@@ -65,10 +65,10 @@ const finishedContainer = document.querySelector('#finished-task-container');
 
 // Buttons
 // TODO: переимпеновать без disabled
-const addBacklogDisabled =  document.querySelector('#add-task-backlog');
-const addReadyDisabled =  document.querySelector('#add-task-ready');
-const addInProgressDisabled =  document.querySelector('#add-task-inProgress');
-const addFinishedDisabled =  document.querySelector('#add-task-finished');
+const addBacklog =  document.querySelector('#add-task-backlog');
+const addReady =  document.querySelector('#add-task-ready');
+const addInProgress =  document.querySelector('#add-task-inProgress');
+const addFinished =  document.querySelector('#add-task-finished');
 
 const backlogTasks = getFromStorage('backlogTasks');
 const readyTasks = [];
@@ -79,22 +79,22 @@ const groupedData = {
   'backlog-task-container': {
     html: backlogContainer,
     tasks: backlogTasks,
-    button: addBacklogDisabled
+    button: addBacklog
   },
   'ready-task-container':  {
     html: readyContainer,
     tasks: readyTasks,
-    button: addReadyDisabled
+    button: addReady
   },
   'in-progress-task-container': {
     html: inProgressContainer,
     tasks: inProgressTasks,
-    button: addInProgressDisabled
+    button: addInProgress
   },
   'finished-task-container': {
     html: finishedContainer,
     tasks: finishedTasks,
-    button: addFinishedDisabled
+    button: addFinished
   }
 }
 
@@ -174,7 +174,7 @@ function createOptionsForReady() {
     readySelect.appendChild(option);
   });
 
-  addReadyDisabled.disabled = false;
+  addReady.disabled = false;
 }
 
 function createOptionsForInProgress() {
@@ -194,7 +194,7 @@ function createOptionsForInProgress() {
     inProgressSelect.appendChild(option);
   });
 
-  addInProgressDisabled.disabled = false;
+  addInProgress.disabled = false;
 }
 
 function createOptionsForFinished() {
@@ -214,7 +214,7 @@ function createOptionsForFinished() {
     finishedSelect.appendChild(option);
   });
 
-  addFinishedDisabled.disabled = false;
+  addFinished.disabled = false;
 }
 
 document.addEventListener('click', (e) => {
@@ -242,14 +242,13 @@ readySelect.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   readyTasks.push(taskInfo);
-  const backlogTask = document.querySelector("#backlog-task-container .task");
-  deleteTask(backlogTask, taskInfo, backlogTasks)
+  deleteTaskFromArray(taskInfo, backlogTasks)
   addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);
   
   if (readySelect.querySelectorAll('.option-item').length === 0) {
-    addReadyDisabled.disabled = true;
+    addReady.disabled = true;
   } else {
-    addReadyDisabled.disabled = false;
+    addReady.disabled = false;
   }
 });
 
@@ -264,14 +263,13 @@ inProgressSelect.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   inProgressTasks.push(taskInfo);
-  const readyTask = document.querySelector("#ready-task-container .task");
-  deleteTask(readyTask, taskInfo, readyTasks)
+  deleteTaskFromArray(taskInfo, readyTasks)
   addTaskToContainer(selectedTask, selectedTaskId, inProgressContainer, inProgressSelectBlock);
 
   if (inProgressSelect.querySelectorAll('.option-item').length === 0) {
-    addInProgressDisabled.disabled = true;
+    addInProgress.disabled = true;
   } else {
-    addInProgressDisabled.disabled = false;
+    addInProgress.disabled = false;
   }
 });
 
@@ -286,17 +284,15 @@ finishedSelect.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   finishedTasks.push(taskInfo);
-  const inProgressTask = document.querySelector("#in-progress-task-container .task");
-  deleteTask(inProgressTask, taskInfo, inProgressTasks);
+  deleteTaskFromArray(taskInfo, inProgressTasks);
   addTaskToContainer(selectedTask, selectedTaskId, finishedContainer, finishedSelectBlock);
   
   if (finishedSelect.querySelectorAll('.option-item').length === 0) {
-    addFinishedDisabled.disabled = true;
+    addFinished.disabled = true;
   } else {
-    addFinishedDisabled.disabled = false;
+    addFinished.disabled = false;
   }
 });
-
 
 function addTaskToContainer(taskText, taskId, container, selectBlock) {
   let newTaskDiv = document.createElement('div');
@@ -310,11 +306,12 @@ function addTaskToContainer(taskText, taskId, container, selectBlock) {
   createOptionsForFinished();
 }
 
-function deleteTask(task, taskInfo, array) {
-  if(task.id === taskInfo.id) {
-    task.remove();
+function deleteTaskFromArray(taskInfo, array) {
+  const index = array.findIndex(task => task.id === taskInfo.id);
+  if (index!== -1) {
+    array.splice(index, 1);
+    console.log('Таск удален из массива', array)
   }
-  array.splice((array.findIndex(task => task.id === taskInfo.id)), 1)
 }
 
 //drag and drop
@@ -326,23 +323,10 @@ dragula(
   finishedContainer
 ],
 {
-  moves: function (el, source, handle, sibling) {
-    return true; // по умолчанию элементы всегда можно перетаскивать
-  },
-  accepts: function (el, target, source, sibling) {
-    return true; // по умолчанию элементы могут быть помещены в любой из `контейнеров`
-  },
-  invalid: function (el, handle) {
-    return false; // не запрещайте инициировать какие-либо перетаскивания по умолчанию
-  },
-  
   revertOnSpill: true,
 }
 )
-.on('drag', function (el) {
-// console.log("Перетаскиваем блок")
-
-}).on('drop', function (el, target, source) {
+.on('drop', function (el, target, source) {
   const searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
   const sourceData = groupedData[source.id]
   const targetData = groupedData[target.id]
@@ -350,22 +334,9 @@ dragula(
   removeObjectFromArrays(el.id, searchArrays);
   addObjectToArray(el, target)
 
-  // const optionItems = document.querySelectorAll('.option-item');
-  // optionItems.forEach(option => {
-  //   if (option.id === taskObject.id) {
-  //     option.remove();
-  //   }
-  // })
-
-
   // TODO блокируется кнопка backlog если в него переместить обратно, source элемента меняется
   targetData.button.disabled = !sourceData.tasks.length
-}).on('over', function (el, container) {
-// console.log("Блок над контейнером")
-
-}).on('out', function (el, container) {
-// console.log("Блок вышел из контейнера")
-});
+})
 
 function removeObjectFromArrays(id, arrays) { 
 arrays.forEach(function(array) {
@@ -384,6 +355,13 @@ function addObjectToArray(el, target) {
     title: el.textContent,
     id: el.id
   };
+
+  const optionItems = document.querySelectorAll('.option-item');
+  optionItems.forEach(option => {
+    if (option.id === taskObject.id) {
+      option.remove();
+    }
+  })
   
   switch (target.id) {
     case 'backlog-task-container': 
