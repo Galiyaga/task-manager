@@ -12,7 +12,7 @@ import {Task} from "./models/Task"
 export const appState = new State();
 
 const loginForm = document.querySelector("#app-login-form");
-loginForm.addEventListener("submit", function (e) {
+loginForm?.addEventListener("submit", function (e) {
   e.preventDefault();
   const formData = new FormData(loginForm);
   const login = formData.get("login");
@@ -21,7 +21,7 @@ loginForm.addEventListener("submit", function (e) {
   const authSuccess = authUser(login, password)
 
   if (authSuccess) {
-    renderTaskBoard()
+    location.reload()
   } else {
     document.querySelector("#content").innerHTML = noAccessTemplate;
   }
@@ -253,7 +253,7 @@ document.addEventListener('click', (e) => {
   else if (addFinished) addToFinished();
 });
 
-readySelect.addEventListener('change', (e) => {
+readySelect?.addEventListener('change', (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
   const selectedTask = selectedOption.value;
   const selectedTaskId = selectedOption.id;
@@ -264,7 +264,10 @@ readySelect.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   readyTasks.push(taskInfo);
-  deleteTaskFromArray(taskInfo, backlogTasks)
+
+  const backlogTasksAsHtml = document.querySelectorAll("#backlog-task-container .task")
+
+  deleteTaskFromArray(backlogTasksAsHtml, taskInfo, backlogTasks)
   addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);
   
   if (readySelect.querySelectorAll('.option-item').length === 0) {
@@ -274,7 +277,7 @@ readySelect.addEventListener('change', (e) => {
   }
 });
 
-inProgressSelect.addEventListener('change', (e) => {
+inProgressSelect?.addEventListener('change', (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
   const selectedTask = selectedOption.value;
   const selectedTaskId = selectedOption.id;
@@ -295,7 +298,7 @@ inProgressSelect.addEventListener('change', (e) => {
   }
 });
 
-finishedSelect.addEventListener('change', (e) => {
+finishedSelect?.addEventListener('change', (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
   const selectedTask = selectedOption.value;
   const selectedTaskId = selectedOption.id;
@@ -328,7 +331,9 @@ function addTaskToContainer(taskText, taskId, container, selectBlock) {
   createOptionsForFinished();
 }
 
-function deleteTaskFromArray(taskInfo, array) {
+function deleteTaskFromArray(htmlElements, taskInfo, array) {
+  Array.from(htmlElements).find(element => element.id === taskInfo.id)?.remove()
+
   const index = array.findIndex(task => task.id === taskInfo.id);
   if (index!== -1) {
     array.splice(index, 1);
@@ -379,11 +384,15 @@ function addObjectToArray(el, target) {
   };
 
   const optionItems = document.querySelectorAll('.option-item');
-  optionItems.forEach(option => {
-    if (option.id === taskObject.id) {
-      option.remove();
-    }
-  })
+  // optionItems.forEach(option => {
+  //   if (option.id === taskObject.id) {
+  //     option.remove();
+  //   }
+  // })
+
+
+
+  Array.from(optionItems).find(option => option.id === taskObject.id)?.remove()
   
   switch (target.id) {
     case 'backlog-task-container': 
