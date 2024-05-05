@@ -27,6 +27,26 @@ loginForm?.addEventListener("submit", function (e) {
   }
 });
 
+// TODO: для других тоже, вишенка
+const backlogTasks = getFromStorage('backlogTasks');
+const readyTasks = [];
+const inProgressTasks= [];
+const finishedTasks= [];
+
+checkForUsers()
+
+function checkForUsers() {
+  const users = getFromStorage('users')
+  const currentUser = JSON.parse(localStorage.getItem('user'))
+
+  if (!users.length) {
+    generateSimpleUser(User);
+    generateAdminUser(User);
+  }
+
+  if (currentUser) renderTaskBoard();
+}
+
 const readySelectBlock = document.querySelector('#ready-select-block');
 const inProgressSelectBlock = document.querySelector('#inProgress-select-block');
 const finishedSelectBlock = document.querySelector('#finished-select-block');
@@ -45,14 +65,6 @@ const addBacklog =  document.querySelector('#add-task-backlog');
 const addReady =  document.querySelector('#add-task-ready');
 const addInProgress =  document.querySelector('#add-task-inProgress');
 const addFinished =  document.querySelector('#add-task-finished');
-
-// TODO: для других тоже, вишенка
-const backlogTasks = getFromStorage('backlogTasks');
-const readyTasks = [];
-const inProgressTasks= [];
-const finishedTasks= [];
-
-console.log('backlogTasks: ', backlogTasks)
 
 const groupedData = {
   'backlog-task-container': {
@@ -77,21 +89,7 @@ const groupedData = {
   }
 }
 
-checkForUsers()
 
-function checkForUsers() {
-  const users = getFromStorage('users')
-  const currentUser = JSON.parse(localStorage.getItem('user'))
-
-  console.log('currentUser: ', currentUser)
-
-  if (!users.length) {
-    generateSimpleUser(User);
-    generateAdminUser(User);
-  }
-
-  if (currentUser) renderTaskBoard();
-}
 
 function renderTaskBoard() {
   const navbar = document.querySelector('#navbar')
