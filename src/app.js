@@ -244,11 +244,6 @@ readySelect.addEventListener('change', (e) => {
   readyTasks.push(taskInfo);
   const backlogTask = document.querySelector("#backlog-task-container .task");
   deleteTask(backlogTask, taskInfo, backlogTasks)
-  // if (!document.body.contains(backlogTask)) {
-  //   console.log('backlogTask Элемент успешно удалён из DOM');
-  // } else {
-  //   console.log('backlogTask Элемент не удалён из DOM');
-  // }
   addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);
   
   if (readySelect.querySelectorAll('.option-item').length === 0) {
@@ -271,11 +266,6 @@ inProgressSelect.addEventListener('change', (e) => {
   inProgressTasks.push(taskInfo);
   const readyTask = document.querySelector("#ready-task-container .task");
   deleteTask(readyTask, taskInfo, readyTasks)
-  // if (!document.body.contains(readyTask)) {
-  //   console.log('readyTask Элемент успешно удалён из DOM');
-  // } else {
-  //   console.log('readyTask Элемент не удалён из DOM');
-  // }
   addTaskToContainer(selectedTask, selectedTaskId, inProgressContainer, inProgressSelectBlock);
 
   if (inProgressSelect.querySelectorAll('.option-item').length === 0) {
@@ -298,11 +288,6 @@ finishedSelect.addEventListener('change', (e) => {
   finishedTasks.push(taskInfo);
   const inProgressTask = document.querySelector("#in-progress-task-container .task");
   deleteTask(inProgressTask, taskInfo, inProgressTasks);
-  // if (!document.body.contains(inProgressTask)) {
-  //   console.log('inProgressTask Элемент успешно удалён из DOM');
-  // } else {
-  //   console.log('inProgressTask Элемент не удалён из DOM');
-  // }
   addTaskToContainer(selectedTask, selectedTaskId, finishedContainer, finishedSelectBlock);
   
   if (finishedSelect.querySelectorAll('.option-item').length === 0) {
@@ -363,8 +348,17 @@ dragula(
   const targetData = groupedData[target.id]
 
   removeObjectFromArrays(el.id, searchArrays);
-  addObjectToArray(el);
+  addObjectToArray(el, target)
 
+  // const optionItems = document.querySelectorAll('.option-item');
+  // optionItems.forEach(option => {
+  //   if (option.id === taskObject.id) {
+  //     option.remove();
+  //   }
+  // })
+
+
+  // TODO блокируется кнопка backlog если в него переместить обратно, source элемента меняется
   targetData.button.disabled = !sourceData.tasks.length
 }).on('over', function (el, container) {
 // console.log("Блок над контейнером")
@@ -373,43 +367,41 @@ dragula(
 // console.log("Блок вышел из контейнера")
 });
 
-  function removeObjectFromArrays(id, arrays) { 
-  arrays.forEach(function(array) {
-    let index = array.findIndex(function(item) {
-      return item.id === id; 
-    });
-    if (index !== -1) {
-      array.splice(index, 1);
-      console.log('Объект удалён из массива');
-    }
-  })
+function removeObjectFromArrays(id, arrays) { 
+arrays.forEach(function(array) {
+  let index = array.findIndex(function(item) {
+    return item.id === id; 
+  });
+  if (index !== -1) {
+    array.splice(index, 1);
+    console.log('Объект удалён из массива');
   }
-
-function addObjectToArray(el) {
-  let container = el.parentNode;
-  let containerId = container.id;
-  let taskObject = {
-  title: el.textContent,
-  id: el.id
-};
-
-switch (containerId) {
-  case 'backlog-task-container': backlogTasks.push(taskObject);
-  break;
-  case 'ready-task-container': readyTasks.push(taskObject);
-  break;
-  case 'in-progress-task-container': inProgressTasks.push(taskObject);
-  break;
-  case 'finished-task-container': finishedTasks.push(taskObject);
-  break;
-  default: console.log('Контейнер не распознан');
+})
 }
 
-  const optionItems = document.querySelectorAll('.option-item');
-  optionItems.forEach(option => {
-    if (option.id === taskObject.id) {
-      option.remove();
-    }
-  })
+function addObjectToArray(el, target) {
+  let taskObject = {
+    title: el.textContent,
+    id: el.id
+  };
+  
+  switch (target.id) {
+    case 'backlog-task-container': 
+      backlogTasks.push(taskObject);
+      createOptionsForReady();
+      break;
+      case 'ready-task-container': 
+      readyTasks.push(taskObject);
+      createOptionsForInProgress();
+      break;
+    case 'in-progress-task-container': 
+      inProgressTasks.push(taskObject);
+      createOptionsForFinished()
+      break;
+    case 'finished-task-container': 
+      finishedTasks.push(taskObject);
+      break;
+    default: console.log('Контейнер не распознан');
+  }
 }
 
