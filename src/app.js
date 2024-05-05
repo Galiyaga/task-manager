@@ -27,29 +27,6 @@ loginForm?.addEventListener("submit", function (e) {
   }
 });
 
-checkForUsers()
-
-function checkForUsers() {
-  const users = getFromStorage('users')
-  const currentUser = JSON.parse(localStorage.getItem('user'))
-
-  console.log('currentUser: ', currentUser)
-
-  if (!users.length) {
-    generateSimpleUser(User);
-    generateAdminUser(User);
-  }
-
-  if (currentUser) renderTaskBoard();
-}
-
-function renderTaskBoard() {
-  const navbar = document.querySelector('#navbar')
-  navbar.remove()
-
-  document.querySelector("#content").innerHTML = taskFieldTemplate;
-}
-
 const readySelectBlock = document.querySelector('#ready-select-block');
 const inProgressSelectBlock = document.querySelector('#inProgress-select-block');
 const finishedSelectBlock = document.querySelector('#finished-select-block');
@@ -69,10 +46,13 @@ const addReady =  document.querySelector('#add-task-ready');
 const addInProgress =  document.querySelector('#add-task-inProgress');
 const addFinished =  document.querySelector('#add-task-finished');
 
+// TODO: для других тоже, вишенка
 const backlogTasks = getFromStorage('backlogTasks');
 const readyTasks = [];
 const inProgressTasks= [];
 const finishedTasks= [];
+
+console.log('backlogTasks: ', backlogTasks)
 
 const groupedData = {
   'backlog-task-container': {
@@ -95,6 +75,46 @@ const groupedData = {
     tasks: finishedTasks,
     button: addFinished
   }
+}
+
+checkForUsers()
+
+function checkForUsers() {
+  const users = getFromStorage('users')
+  const currentUser = JSON.parse(localStorage.getItem('user'))
+
+  console.log('currentUser: ', currentUser)
+
+  if (!users.length) {
+    generateSimpleUser(User);
+    generateAdminUser(User);
+  }
+
+  if (currentUser) renderTaskBoard();
+}
+
+function renderTaskBoard() {
+  const navbar = document.querySelector('#navbar')
+  navbar.remove()
+
+  document.querySelector("#content").innerHTML = taskFieldTemplate;
+
+  renderAllTasks("#backlog-task-container", backlogTasks)
+  // TODO: Надо добавить для других колонок, дипунька
+}
+
+function renderAllTasks (targetContainer, tasksArray) {
+  for (let task of tasksArray) {
+    renderTask(targetContainer, task)
+  }
+}
+
+function renderTask (targetContainer, taskInfo) {
+  let newTaskDiv = document.createElement("div");
+  newTaskDiv.className = "task";
+  newTaskDiv.textContent = taskInfo.title;
+  newTaskDiv.id = taskInfo.id;
+  document.querySelector(targetContainer).appendChild(newTaskDiv);
 }
 
 // Логика добавления в колонки
@@ -149,11 +169,7 @@ function saveToBacklog() {
     backlogTasks.push(taskInfo);
     addToStorage(taskInfo, 'backlogTasks')
 
-    let newTaskDiv = document.createElement("div");
-    newTaskDiv.className = "task";
-    newTaskDiv.textContent = taskInfo.title;
-    newTaskDiv.id = taskInfo.id;
-    document.querySelector("#backlog-task-container").appendChild(newTaskDiv);
+    renderTask("#backlog-task-container", taskInfo)
   }
 
   document.querySelector("#task-input").remove();
