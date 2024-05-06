@@ -408,8 +408,7 @@ dragula(
 .on('drop', function (el, target, source) {
   const searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
   const sourceData = groupedData[source.id]
-  const targetData = groupedData[target.id]
-
+  const targetData = groupedData[target.id];
   removeObjectFromArrays(el.id, searchArrays);
   addObjectToArray(el, target)
 
@@ -418,16 +417,18 @@ dragula(
 })
 
 function removeObjectFromArrays(id, arrays) { 
-arrays.forEach(function(array) {
-  let index = array.findIndex(function(item) {
-    return item.id === id; 
-  });
-  if (index !== -1) {
-    array.splice(index, 1);
-    console.log('Объект удалён из массива');
-  }
-})
+  arrays.forEach(function(array) {
+    let index = array.findIndex(function(item) {
+      return item.id === id; 
+    });
+    if (index !== -1) {
+      array.splice(index, 1); 
+      console.log('Объект удалён из массива');
+    }
+    localStorage.setItem('backlogTasks', JSON.stringify(array))  
+  })
 }
+
 
 function addObjectToArray(el, target) {
   let taskObject = {
@@ -436,32 +437,28 @@ function addObjectToArray(el, target) {
   };
 
   const optionItems = document.querySelectorAll('.option-item');
-  // optionItems.forEach(option => {
-  //   if (option.id === taskObject.id) {
-  //     option.remove();
-  //   }
-  // })
-
-
-
   Array.from(optionItems).find(option => option.id === taskObject.id)?.remove()
   
   switch (target.id) {
     case 'backlog-task-container': 
       backlogTasks.push(taskObject);
+      addToStorage(taskObject, 'backlogTasks')
       createOptionsForReady();
       break;
       case 'ready-task-container': 
       readyTasks.push(taskObject);
+      addToStorage(taskObject, 'readyTasks')
       createOptionsForInProgress();
       break;
-    case 'in-progress-task-container': 
+      case 'in-progress-task-container': 
       inProgressTasks.push(taskObject);
+      addToStorage(taskObject, 'inProgressTasks')
       createOptionsForFinished()
       break;
     case 'finished-task-container': 
-      finishedTasks.push(taskObject);
-      break;
+    finishedTasks.push(taskObject);
+    addToStorage(taskObject, 'finishedTasks')
+    break;
     default: console.log('Контейнер не распознан');
   }
 }
