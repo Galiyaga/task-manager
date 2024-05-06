@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/style.css";
 import taskFieldTemplate from "./templates/taskField.html";
 import noAccessTemplate from "./templates/noAccess.html";
+import indexTemplate from "./index.html";
 import newTask from "./templates/newTask.html";
 import { User } from "./models/User";
 import {addToStorage, generateAdminUser, generateSimpleUser, getFromStorage} from "./utils";
@@ -202,6 +203,10 @@ function displayMenuList() {
   } 
 }
 
+function showLoginPage() {
+  document.querySelector("#content").innerHTML = indexTemplate;
+}
+
 function createOptionsForReady() {
   readySelect.innerHTML = '';
 
@@ -270,6 +275,9 @@ document.addEventListener('click', (e) => {
   const addInProgress = e.target.closest("#add-task-inProgress");
   const addFinished = e.target.closest("#add-task-finished");
   const addMenuList = e.target.closest('.user-avatar');
+  const logoutButton = e.target.closest("#logoutButton");
+
+
   
   if (addBacklog) addToBacklog()
   else if (submitBacklog) saveToBacklog();
@@ -277,6 +285,7 @@ document.addEventListener('click', (e) => {
   else if (addInProgress) addToInProgress();
   else if (addFinished) addToFinished();
   else if (addMenuList) displayMenuList();
+  else if (logoutButton) showLoginPage();
 });
 
 readySelect?.addEventListener('change', (e) => {
