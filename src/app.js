@@ -425,6 +425,7 @@ function removeObjectFromArrays(id, arrays) {
       array.splice(index, 1); 
       console.log('Объект удалён из массива');
     }
+    // TODO найти способ передать ключ "array" динамично
     localStorage.setItem('backlogTasks', JSON.stringify(array))  
   })
 }
