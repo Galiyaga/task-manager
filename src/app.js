@@ -27,11 +27,10 @@ loginForm?.addEventListener("submit", function (e) {
   }
 });
 
-// TODO: для других тоже, вишенка
 const backlogTasks = getFromStorage('backlogTasks');
-const readyTasks = [];
-const inProgressTasks= [];
-const finishedTasks= [];
+const readyTasks = getFromStorage('readyTasks');;
+const inProgressTasks= getFromStorage('inProgressTasks');;
+const finishedTasks= getFromStorage('finishedTasks');;
 
 checkForUsers()
 
@@ -98,6 +97,9 @@ function renderTaskBoard() {
   document.querySelector("#content").innerHTML = taskFieldTemplate;
 
   renderAllTasks("#backlog-task-container", backlogTasks)
+  renderAllTasks("#ready-task-container", readyTasks)
+  renderAllTasks("#in-progress-task-container", inProgressTasks)
+  renderAllTasks("#finished-task-container", finishedTasks)
   // TODO: Надо добавить для других колонок, дипунька
 }
 
@@ -278,12 +280,14 @@ readySelect?.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   readyTasks.push(taskInfo);
+  addToStorage(taskInfo, 'readyTasks')
 
   const backlogTasksAsHtml = document.querySelectorAll("#backlog-task-container .task")
-
-  deleteTaskFromArray(backlogTasksAsHtml, taskInfo, backlogTasks)
-  addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);
+  deleteTask(backlogTasksAsHtml, taskInfo, backlogTasks, 'backlogTasks')
+  console.log('backlogTasks', backlogTasks)
   
+  
+  addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);  
   if (readySelect.querySelectorAll('.option-item').length === 0) {
     addReady.disabled = true;
   } else {
@@ -302,9 +306,12 @@ inProgressSelect?.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   inProgressTasks.push(taskInfo);
-  deleteTaskFromArray(taskInfo, readyTasks)
-  addTaskToContainer(selectedTask, selectedTaskId, inProgressContainer, inProgressSelectBlock);
+  addToStorage(taskInfo, 'inProgressTasks')
 
+  const readyTasksAsHtml = document.querySelectorAll("#ready-task-container .task")
+  deleteTask(readyTasksAsHtml, taskInfo, readyTasks, 'readyTasks')
+
+  addTaskToContainer(selectedTask, selectedTaskId, inProgressContainer, inProgressSelectBlock);
   if (inProgressSelect.querySelectorAll('.option-item').length === 0) {
     addInProgress.disabled = true;
   } else {
@@ -323,7 +330,11 @@ finishedSelect?.addEventListener('change', (e) => {
     id: selectedTaskId
   };
   finishedTasks.push(taskInfo);
-  deleteTaskFromArray(taskInfo, inProgressTasks);
+  addToStorage(taskInfo, 'finishedTasks')
+
+  const inProgressTasksAsHtml = document.querySelectorAll("#in-progress-task-container .task")
+  deleteTask(inProgressTasksAsHtml, taskInfo, inProgressTasks, 'inProgressTasks')
+
   addTaskToContainer(selectedTask, selectedTaskId, finishedContainer, finishedSelectBlock);
   
   if (finishedSelect.querySelectorAll('.option-item').length === 0) {
@@ -345,14 +356,21 @@ function addTaskToContainer(taskText, taskId, container, selectBlock) {
   createOptionsForFinished();
 }
 
-function deleteTaskFromArray(htmlElements, taskInfo, array) {
+const containerIds = {
+  backlogTasks: 'backlog-task-container',
+  readyTasks: 'ready-task-container',
+  inProgressTasks: 'in-progress-task-container',
+  finishedTasks: 'finished-task-container'
+};
+
+function deleteTask(htmlElements, taskInfo, array, storageKey) {
   Array.from(htmlElements).find(element => element.id === taskInfo.id)?.remove()
 
   const index = array.findIndex(task => task.id === taskInfo.id);
   if (index!== -1) {
     array.splice(index, 1);
-    console.log('Таск удален из массива', array)
   }
+  localStorage.setItem(storageKey, JSON.stringify(array))  
 }
 
 //drag and drop
