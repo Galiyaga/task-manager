@@ -204,6 +204,7 @@ function displayMenuList() {
 }
 
 function showLoginPage() {
+  localStorage.removeItem('user');
   document.querySelector("#content").innerHTML = indexTemplate;
 }
 
