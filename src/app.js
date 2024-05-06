@@ -46,6 +46,7 @@ function checkForUsers() {
   if (currentUser) renderTaskBoard();
 }
 
+
 const readySelectBlock = document.querySelector('#ready-select-block');
 const inProgressSelectBlock = document.querySelector('#inProgress-select-block');
 const finishedSelectBlock = document.querySelector('#finished-select-block');
@@ -88,12 +89,10 @@ const groupedData = {
   }
 }
 
-
-
 function renderTaskBoard() {
   const navbar = document.querySelector('#navbar')
   navbar.remove()
-
+  
   document.querySelector("#content").innerHTML = taskFieldTemplate;
 
   renderAllTasks("#backlog-task-container", backlogTasks)
@@ -194,6 +193,15 @@ function addToFinished() {
   finishedContainer.appendChild(finishedSelectBlock);
 }
 
+function displayMenuList() {
+  const userMenu = document.querySelector('#userMenu');
+  if (userMenu.style.display === 'none') {
+    userMenu.style.display = 'block';
+  } else {
+    userMenu.style.display = 'none';
+  } 
+}
+
 function createOptionsForReady() {
   readySelect.innerHTML = '';
 
@@ -261,12 +269,14 @@ document.addEventListener('click', (e) => {
   const addReady = e.target.closest("#add-task-ready");
   const addInProgress = e.target.closest("#add-task-inProgress");
   const addFinished = e.target.closest("#add-task-finished");
+  const addMenuList = e.target.closest('.user-avatar');
   
   if (addBacklog) addToBacklog()
   else if (submitBacklog) saveToBacklog();
   else if (addReady) addToReady();
   else if (addInProgress) addToInProgress();
   else if (addFinished) addToFinished();
+  else if (addMenuList) displayMenuList();
 });
 
 readySelect?.addEventListener('change', (e) => {
