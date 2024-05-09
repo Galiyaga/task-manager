@@ -376,13 +376,6 @@ function addTaskToContainer(taskText, taskId, container, selectBlock) {
   createOptionsForFinished();
 }
 
-const containerIds = {
-  backlogTasks: 'backlog-task-container',
-  readyTasks: 'ready-task-container',
-  inProgressTasks: 'in-progress-task-container',
-  finishedTasks: 'finished-task-container'
-};
-
 function deleteTask(htmlElements, taskInfo, array, storageKey) {
   Array.from(htmlElements).find(element => element.id === taskInfo.id)?.remove()
 
@@ -406,7 +399,7 @@ dragula(
 }
 )
 .on('drop', function (el, target, source) {
-  const searchArrays = [backlogTasks, readyTasks, inProgressTasks, finishedTasks];
+  const searchArrays = Object.values(groupedData).map(item => item.tasks);
   const sourceData = groupedData[source.id]
   const targetData = groupedData[target.id];
   removeObjectFromArrays(el.id, searchArrays);
@@ -425,11 +418,15 @@ function removeObjectFromArrays(id, arrays) {
       array.splice(index, 1); 
       console.log('Объект удалён из массива');
     }
-    // TODO найти способ передать ключ "array" динамично
-    localStorage.setItem('backlogTasks', JSON.stringify(array))  
   })
 }
 
+const containerIds = {
+  backlogTasks: 'backlog-task-container',
+  readyTasks: 'ready-task-container',
+  inProgressTasks: 'in-progress-task-container',
+  finishedTasks: 'finished-task-container'
+};
 
 function addObjectToArray(el, target) {
   let taskObject = {
@@ -449,16 +446,19 @@ function addObjectToArray(el, target) {
       case 'ready-task-container': 
       readyTasks.push(taskObject);
       addToStorage(taskObject, 'readyTasks')
+      localStorage.setItem('backlogTasks', JSON.stringify(backlogTasks));
       createOptionsForInProgress();
       break;
       case 'in-progress-task-container': 
       inProgressTasks.push(taskObject);
       addToStorage(taskObject, 'inProgressTasks')
+      localStorage.setItem('readyTasks', JSON.stringify(readyTasks));
       createOptionsForFinished()
       break;
-    case 'finished-task-container': 
-    finishedTasks.push(taskObject);
-    addToStorage(taskObject, 'finishedTasks')
+      case 'finished-task-container': 
+      finishedTasks.push(taskObject);
+      addToStorage(taskObject, 'finishedTasks')
+      localStorage.setItem('inProgressTasks', JSON.stringify(inProgressTasks));
     break;
     default: console.log('Контейнер не распознан');
   }
