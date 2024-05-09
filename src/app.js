@@ -71,22 +71,29 @@ const groupedData = {
   'backlog-task-container': {
     html: backlogContainer,
     tasks: backlogTasks,
-    button: addBacklog
+    tasksName: 'backlogTasks',
+    button: addBacklog,
   },
   'ready-task-container':  {
     html: readyContainer,
     tasks: readyTasks,
-    button: addReady
+    tasksName: 'readyTasks',
+    button: addReady,
+    updateOptionsMethod: createOptionsForReady
   },
   'in-progress-task-container': {
     html: inProgressContainer,
     tasks: inProgressTasks,
-    button: addInProgress
+    tasksName: 'inProgressTasks',
+    button: addInProgress,
+    updateOptionsMethod: createOptionsForInProgress
   },
   'finished-task-container': {
     html: finishedContainer,
     tasks: finishedTasks,
-    button: addFinished
+    tasksName: 'finishedTasks',
+    button: addFinished,
+    updateOptionsMethod: createOptionsForFinished
   }
 }
 
@@ -216,9 +223,13 @@ function createOptionsForReady() {
   emptyOption.className = 'option-empty'
   readySelect.appendChild(emptyOption);
 
-  const availableToreadyOptions = backlogTasks.filter(task =>!readyTasks.some(readyTask => readyTask.id === task.id)
-   );
-  availableToreadyOptions.forEach(taskInfo => {
+  console.log('backlogTasks: ', backlogTasks)
+  console.log('readyTasks: ', readyTasks)
+
+  const availableToReadyOptions = backlogTasks.filter(task =>!readyTasks.some(readyTask => readyTask.id === task.id));
+
+  console.log('availableToReadyOptions: ', availableToReadyOptions)
+  availableToReadyOptions.forEach(taskInfo => {
     const option = document.createElement('option')
     option.className = "option-item";
     option.textContent = taskInfo.title;
@@ -399,67 +410,56 @@ dragula(
 }
 )
 .on('drop', function (el, target, source) {
-  const searchArrays = Object.values(groupedData).map(item => item.tasks);
   const sourceData = groupedData[source.id]
   const targetData = groupedData[target.id];
-  removeObjectFromArrays(el.id, searchArrays);
-  addObjectToArray(el, target)
+
+  updateTasksData(el, sourceData, targetData)
+  // addObjectToArray(el, target)
 
   // TODO блокируется кнопка backlog если в него переместить обратно, source элемента меняется
   targetData.button.disabled = !sourceData.tasks.length
 })
 
-function removeObjectFromArrays(id, arrays) { 
-  arrays.forEach(function(array) {
-    let index = array.findIndex(function(item) {
-      return item.id === id; 
-    });
-    if (index !== -1) {
-      array.splice(index, 1); 
-      console.log('Объект удалён из массива');
-    }
-  })
-}
-
-const containerIds = {
-  backlogTasks: 'backlog-task-container',
-  readyTasks: 'ready-task-container',
-  inProgressTasks: 'in-progress-task-container',
-  finishedTasks: 'finished-task-container'
-};
-
-function addObjectToArray(el, target) {
+function updateTasksData(element, sourceData, targetData) {
+  // TODO: отрефакторпить копирование таска
   let taskObject = {
-    title: el.textContent,
-    id: el.id
+    title: element.textContent,
+    id: element.id
   };
 
+  // обновляет данные тасков
+  sourceData.tasks = sourceData.tasks.filter(task => task.id !== element.id)
+  targetData.tasks.push(taskObject)
+
+  localStorage.setItem(sourceData.tasksName, JSON.stringify(sourceData.tasks));
+  localStorage.setItem(targetData.tasksName, JSON.stringify(targetData.tasks));
+
+  // обновляет данные селектов
   const optionItems = document.querySelectorAll('.option-item');
-  Array.from(optionItems).find(option => option.id === taskObject.id)?.remove()
-  
+  Array.from(optionItems).find(option => option.id === element.id)?.remove()
+
+  // TODO: искали почему в updateOptionsForReady неправильное количество опций вычисляется
+  console.log('elId: ', element.id)
+  console.log('sourceData: ', sourceData)
+  console.log('targetData: ', targetData)
+
+  sourceData.updateOptionsMethod && sourceData.updateOptionsMethod()
+  targetData.updateOptionsMethod && targetData.updateOptionsMethod()
+}
+
+function addObjectToArray(el, target) {
   switch (target.id) {
-    case 'backlog-task-container': 
-      backlogTasks.push(taskObject);
-      addToStorage(taskObject, 'backlogTasks')
+    case 'backlog-task-container':
       createOptionsForReady();
       break;
-      case 'ready-task-container': 
-      readyTasks.push(taskObject);
-      addToStorage(taskObject, 'readyTasks')
-      localStorage.setItem('backlogTasks', JSON.stringify(backlogTasks));
+    case 'ready-task-container':
       createOptionsForInProgress();
       break;
-      case 'in-progress-task-container': 
-      inProgressTasks.push(taskObject);
-      addToStorage(taskObject, 'inProgressTasks')
-      localStorage.setItem('readyTasks', JSON.stringify(readyTasks));
+    case 'in-progress-task-container':
       createOptionsForFinished()
       break;
-      case 'finished-task-container': 
-      finishedTasks.push(taskObject);
-      addToStorage(taskObject, 'finishedTasks')
-      localStorage.setItem('inProgressTasks', JSON.stringify(inProgressTasks));
-    break;
+    case 'finished-task-container':
+      break;
     default: console.log('Контейнер не распознан');
   }
 }
