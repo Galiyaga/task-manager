@@ -314,9 +314,7 @@ readySelect?.addEventListener('change', (e) => {
   addToStorage(taskInfo, 'readyTasks')
 
   const backlogTasksAsHtml = document.querySelectorAll("#backlog-task-container .task")
-  deleteTask(backlogTasksAsHtml, taskInfo, backlogTasks, 'backlogTasks')
-  console.log('backlogTasks', backlogTasks)
-  
+  deleteTask(backlogTasksAsHtml, taskInfo, backlogTasks, 'backlogTasks')  
   
   addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);  
   if (readySelect.querySelectorAll('.option-item').length === 0) {
@@ -412,15 +410,17 @@ dragula(
 .on('drop', function (el, target, source) {
   const sourceData = groupedData[source.id]
   const targetData = groupedData[target.id];
+  const sourceArray = sourceData.tasks
 
-  updateTasksData(el, sourceData, targetData)
+  updateTasksData(el, sourceData, targetData, sourceArray)
+  // createOptionInAllSelects(groupedData, sourceData, targetData)
   // addObjectToArray(el, target)
 
   // TODO блокируется кнопка backlog если в него переместить обратно, source элемента меняется
   targetData.button.disabled = !sourceData.tasks.length
 })
 
-function updateTasksData(element, sourceData, targetData) {
+function updateTasksData(element, sourceData, targetData, sourceArray) {
   // TODO: отрефакторпить копирование таска
   let taskObject = {
     title: element.textContent,
@@ -429,6 +429,13 @@ function updateTasksData(element, sourceData, targetData) {
 
   // обновляет данные тасков
   sourceData.tasks = sourceData.tasks.filter(task => task.id !== element.id)
+  /* замена методу filter */
+  // sourceArray.forEach((item, index) => {
+  //   if (item.id === element.id) {
+  //     sourceArray.splice(index, 1);
+  //     console.log('el удален из массива', sourceArray)
+  //   }
+  // })
   targetData.tasks.push(taskObject)
 
   localStorage.setItem(sourceData.tasksName, JSON.stringify(sourceData.tasks));
@@ -445,6 +452,20 @@ function updateTasksData(element, sourceData, targetData) {
 
   sourceData.updateOptionsMethod && sourceData.updateOptionsMethod()
   targetData.updateOptionsMethod && targetData.updateOptionsMethod()
+}
+/* условия для метода updateOptionsMethod */
+function createOptionInAllSelects(groupedData, sourceData, targetData) {
+  let sourceIndex = Object.keys(groupedData).indexOf(sourceData.html.id);
+  let targetIndex = Object.keys(groupedData).indexOf(targetData.html.id);
+  console.log('sourceIndex: ', sourceIndex)
+  console.log('targetIndex: ', targetIndex)
+  if(targetIndex > sourceIndex) {
+    targetIndex++
+    targetData.updateOptionsMethod()
+    console.log('targetData после увеличения: ', targetData)
+  } else {
+    sourceData.updateOptionsMethod && sourceData.updateOptionsMethod()
+  }
 }
 
 function addObjectToArray(el, target) {
