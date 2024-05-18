@@ -100,14 +100,18 @@ const groupedData = {
 function renderTaskBoard() {
   const navbar = document.querySelector('#navbar')
   navbar.remove()
-  
+
   document.querySelector("#content").innerHTML = taskFieldTemplate;
 
   renderAllTasks("#backlog-task-container", backlogTasks)
   renderAllTasks("#ready-task-container", readyTasks)
   renderAllTasks("#in-progress-task-container", inProgressTasks)
   renderAllTasks("#finished-task-container", finishedTasks)
-  // TODO: Надо добавить для других колонок, дипунька
+
+  // Buttons
+  if (backlogTasks.length) document.querySelector('#add-task-ready').disabled = false;
+  if (readyTasks.length) document.querySelector('#add-task-inProgress').disabled = false;
+  if (inProgressTasks.length) document.querySelector('#add-task-finished').disabled = false;
 }
 
 function renderAllTasks (targetContainer, tasksArray) {
@@ -413,29 +417,23 @@ dragula(
   const sourceArray = sourceData.tasks
 
   updateTasksData(el, sourceData, targetData, sourceArray)
-  // createOptionInAllSelects(groupedData, sourceData, targetData)
-  // addObjectToArray(el, target)
 
-  // TODO блокируется кнопка backlog если в него переместить обратно, source элемента меняется
   targetData.button.disabled = !sourceData.tasks.length
 })
 
 function updateTasksData(element, sourceData, targetData, sourceArray) {
-  // TODO: отрефакторпить копирование таска
   let taskObject = {
     title: element.textContent,
     id: element.id
   };
 
   // обновляет данные тасков
-  sourceData.tasks = sourceData.tasks.filter(task => task.id !== element.id)
-  /* замена методу filter */
-  // sourceArray.forEach((item, index) => {
-  //   if (item.id === element.id) {
-  //     sourceArray.splice(index, 1);
-  //     console.log('el удален из массива', sourceArray)
-  //   }
-  // })
+  sourceArray.forEach((item, index) => {
+    if (item.id === element.id) {
+      sourceArray.splice(index, 1);
+      console.log('el удален из массива', sourceArray)
+    }
+  })
   targetData.tasks.push(taskObject)
 
   localStorage.setItem(sourceData.tasksName, JSON.stringify(sourceData.tasks));
@@ -445,27 +443,8 @@ function updateTasksData(element, sourceData, targetData, sourceArray) {
   const optionItems = document.querySelectorAll('.option-item');
   Array.from(optionItems).find(option => option.id === element.id)?.remove()
 
-  // TODO: искали почему в updateOptionsForReady неправильное количество опций вычисляется
-  console.log('elId: ', element.id)
-  console.log('sourceData: ', sourceData)
-  console.log('targetData: ', targetData)
-
   sourceData.updateOptionsMethod && sourceData.updateOptionsMethod()
   targetData.updateOptionsMethod && targetData.updateOptionsMethod()
-}
-/* условия для метода updateOptionsMethod */
-function createOptionInAllSelects(groupedData, sourceData, targetData) {
-  let sourceIndex = Object.keys(groupedData).indexOf(sourceData.html.id);
-  let targetIndex = Object.keys(groupedData).indexOf(targetData.html.id);
-  console.log('sourceIndex: ', sourceIndex)
-  console.log('targetIndex: ', targetIndex)
-  if(targetIndex > sourceIndex) {
-    targetIndex++
-    targetData.updateOptionsMethod()
-    console.log('targetData после увеличения: ', targetData)
-  } else {
-    sourceData.updateOptionsMethod && sourceData.updateOptionsMethod()
-  }
 }
 
 function addObjectToArray(el, target) {
