@@ -2,8 +2,6 @@
 
 ## An example of how the application works
 
-In your **README.md**, simply have a commented section like this, in the format:
-
     <!---KANBAN
     # Backlog
     - Implement adding and removing users
@@ -29,12 +27,16 @@ Which generates:
 
 ## Usage
 
-Add it to package.json scripts, similar to:
+Scripts for the package.json file:
 
-     "scripts": {
+    
+```javascript
+"scripts": {
         "start": "webpack serve --mode development --open",
         "build": "webpack --mode production"
-     }
+    }
+```
+
 
 Then fire it up by running:
 
@@ -43,13 +45,15 @@ Then fire it up by running:
 
 ## Data for logging into your personal account
 
-User:
-    login: 'Vasya',
-    password: 'qwerty123'
+**User:**
 
-Admin:
-    login: 'admin',
-    password: '123'
+- login: Vasya
+- password: qwerty123
+
+**Admin:**
+
+- login: admin
+- password: 123
 
 
 
