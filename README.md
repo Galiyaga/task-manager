@@ -25,7 +25,7 @@ Which generates:
 
 ![created by readme-kanban-board](./img/ExampleCanbanBoard.png)
 
-<p align="center"><img src="./img/ScreenityCanban.gif" width="80%"></p>
+<img src="./img/ScreenityCanban.gif" >
 
 ## Usage
 
