@@ -1,0 +1,32 @@
+<div class="content">
+    <div class="header">
+        <div class="header-title">
+            <p>Awesome Kanban Board</p>
+        </div>
+        <div class="user-menu">
+            <div class="user-avatar">
+                <img src="../../img/user-avatar.svg" alt="User Avatar">
+                <span class="arrow">&#9660;</span>
+            </div>
+            <div class="menu-list" id="userMenu">
+                <a href="#">Мой аккаунт</a>
+                <a href="#">Мои задачи</a>
+                <a id="adminButton" href="#">Администрирование</a>
+                <a id="logoutButton" href="#">Выход</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-panel">
+        <h2>Список пользователей</h2>
+
+        <ul id="userList"></ul>
+    </div>
+
+    <div id="newUserForm">
+        <h3>Добавить нового пользователя</h3>
+        <input type="text" id="newUserName" placeholder="Логин">
+        <input type="email" id="newUserPass" placeholder="Пароль">
+        <button id="addNewUserBtn">Добавить пользователя</button>
+    </div>
+</div>

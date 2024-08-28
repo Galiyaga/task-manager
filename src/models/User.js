@@ -29,4 +29,24 @@ export class User extends BaseModel {
       throw new Error(e);
     }
   }
+
+  static save(user) {
+    try {
+      addToStorage(user, user.storageKey);
+      return true;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static remove(user) {
+    try {
+      let users = getFromStorage(user.storageKey);
+      users = users.filter(u => u.login !== user.login);
+      localStorage.setItem(user.storageKey, JSON.stringify(users));
+      return true;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 }

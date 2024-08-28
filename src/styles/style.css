@@ -83,6 +83,8 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
 }
 
 .header-title {
+  display: flex;
+  align-content: center;
   color: #FFFFFF;
   font-family: Roboto;
   font-size: 28px;

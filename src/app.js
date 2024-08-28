@@ -3,6 +3,7 @@ import "./styles/style.css";
 import taskFieldTemplate from "./templates/taskField.html";
 import noAccessTemplate from "./templates/noAccess.html";
 import indexTemplate from "./index.html";
+import administrationUsersTemplate from './templates/administrationUsers.html';
 import newTask from "./templates/newTask.html";
 import { User } from "./models/User";
 import {addToStorage, generateAdminUser, generateSimpleUser, getFromStorage} from "./utils";
@@ -219,6 +220,12 @@ function showLoginPage() {
   document.querySelector("#content").innerHTML = indexTemplate;
 }
 
+function showAdminPage() {
+  localStorage.removeItem('user');
+  document.querySelector("#content").innerHTML = administrationUsersTemplate;
+  displayUserList()
+}
+
 function createOptionsForReady() {
   readySelect.innerHTML = '';
 
@@ -292,7 +299,8 @@ document.addEventListener('click', (e) => {
   const addFinished = e.target.closest("#add-task-finished");
   const addMenuList = e.target.closest('.user-avatar');
   const logoutButton = e.target.closest("#logoutButton");
-
+  const adminButton = e.target.closest("#adminButton");
+  const addNewUserBtn = e.target.closest("#addNewUserBtn");
 
   
   if (addBacklog) addToBacklog()
@@ -302,7 +310,71 @@ document.addEventListener('click', (e) => {
   else if (addFinished) addToFinished();
   else if (addMenuList) displayMenuList();
   else if (logoutButton) showLoginPage();
+  else if (adminButton) showAdminPage();
+  else if (addNewUserBtn) addUSerFromAdminPage();
 });
+
+function displayUserList() {
+  const users = getFromStorage('users')
+  const userList = document.getElementById('userList');
+  
+  // Очищаем список перед добавлением новых данных
+  userList.innerHTML = '';
+
+  // Проверяем, есть ли пользователи
+  if (Object.keys(users).length === 0) {
+      userList.innerHTML = '<li>Пользователи отсутствуют</li>';
+      return;
+  }
+
+  // Добавляем заголовок для списка
+  const header = document.createElement('h3');
+  header.textContent = 'Список пользователей';
+  userList.appendChild(header);
+
+  // Создаем элементы списка для каждого пользователя
+  Object.entries(users).forEach(([username, userData]) => {
+      const listItem = document.createElement('li');
+      listItem.textContent = `Логин: ${userData.login} Пароль: ${userData.password}`;
+      
+      // Добавляем кнопку для удаления пользователя
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = 'Удалить';
+      deleteButton.onclick = () => deleteUser(username);
+      listItem.appendChild(deleteButton);
+
+      userList.appendChild(listItem);
+  });
+}
+
+function addUSerFromAdminPage() {
+  const userName = document.getElementById('newUserName').value;
+  const userPass = document.getElementById('newUserPass').value;
+  
+  if (userName && userPass) {
+      addUserToLocalStorage(userName, userPass);
+      // Очищаем форму после успешного добавления
+      document.getElementById('newUserName').value = '';
+      document.getElementById('newUserPass').value = '';
+  } else {
+      alert('Пожалуйста, заполните все поля.');
+  }
+}
+
+function addUserToLocalStorage(name, pass) {
+  console.log('PFT<FK')
+  const users = getFromStorage('users')
+  
+  users.push({
+    login: name.trim(),
+    password: pass.trim()
+  });
+  
+  localStorage.setItem('users', JSON.stringify(users));
+  
+  displayUserList(); // Обновляем список пользователей после добавления нового
+}
+
 
 readySelect?.addEventListener('change', (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
