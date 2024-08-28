@@ -16,17 +16,21 @@
             </div>
         </div>
     </div>
-
-    <div id="admin-panel">
-        <h2>Список пользователей</h2>
-
-        <ul id="userList"></ul>
-    </div>
-
-    <div id="newUserForm">
-        <h3>Добавить нового пользователя</h3>
-        <input type="text" id="newUserName" placeholder="Логин">
-        <input type="email" id="newUserPass" placeholder="Пароль">
-        <button id="addNewUserBtn">Добавить пользователя</button>
+    <div class="admin-panel_conainer">
+        <div class="admin-panel_header" id="admin-panel">
+            <h2>Список пользователей</h2>
+        </div>
+    
+        <div class="admin-panel_users">
+            <ul id="userList" class="users_items"></ul>
+        </div>
+        <div class="new-users_form" id="newUserForm">
+            <h3 class="form_title">Добавить нового пользователя</h3>
+            <div class="form_inputs">
+                <input class="form_input" type="text" id="newUserName" placeholder="Логин">
+                <input class="form_input" type="email" id="newUserPass" placeholder="Пароль">
+            </div>
+            <button class="form_button" id="addNewUserBtn">Добавить пользователя</button>
+        </div>
     </div>
 </div>

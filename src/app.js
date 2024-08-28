@@ -327,11 +327,6 @@ function displayUserList() {
       return;
   }
 
-  // Добавляем заголовок для списка
-  const header = document.createElement('h3');
-  header.textContent = 'Список пользователей';
-  userList.appendChild(header);
-
   // Создаем элементы списка для каждого пользователя
   Object.entries(users).forEach(([username, userData]) => {
       const listItem = document.createElement('li');
@@ -364,7 +359,7 @@ function addUSerFromAdminPage() {
   
   if (userName && userPass) {
       addUserToLocalStorage(userName, userPass);
-      // Очищаем форму после успешного добавления
+      // Очищаем форму после добавления
       document.getElementById('newUserName').value = '';
       document.getElementById('newUserPass').value = '';
   } else {
