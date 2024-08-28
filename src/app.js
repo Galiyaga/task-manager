@@ -340,11 +340,22 @@ function displayUserList() {
       // Добавляем кнопку для удаления пользователя
       const deleteButton = document.createElement('button');
       deleteButton.textContent = 'Удалить';
-      deleteButton.onclick = () => deleteUser(username);
+      deleteButton.onclick = () => deleteUser(userData);
       listItem.appendChild(deleteButton);
 
       userList.appendChild(listItem);
   });
+}
+
+function deleteUser(userData) {
+  let users = getFromStorage('users')
+  console.log(userData)
+
+  users = users.filter(el => el.login !== userData.login)
+
+
+  localStorage.setItem('users', JSON.stringify(users));
+  displayUserList()
 }
 
 function addUSerFromAdminPage() {
