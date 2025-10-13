@@ -29,15 +29,15 @@ loginForm?.addEventListener("submit", function (e) {
   }
 });
 
-const backlogTasks = getFromStorage('backlogTasks');
-const readyTasks = getFromStorage('readyTasks');;
-const inProgressTasks= getFromStorage('inProgressTasks');;
-const finishedTasks= getFromStorage('finishedTasks');;
+const backlogTasks = getFromStorage('backlogTasks') || [];
+const readyTasks = getFromStorage('readyTasks') || [];
+const inProgressTasks= getFromStorage('inProgressTasks') || [];
+const finishedTasks= getFromStorage('finishedTasks') || [];
 
 checkForUsers()
 
 function checkForUsers() {
-  const users = getFromStorage('users')
+  const users = getFromStorage('users') || [];
   const currentUser = JSON.parse(localStorage.getItem('user'))
 
   if (!users.length) {
@@ -100,7 +100,7 @@ const groupedData = {
 
 function renderTaskBoard() {
   const navbar = document.querySelector('#navbar')
-  navbar.remove()
+  navbar?.remove()
 
   document.querySelector("#content").innerHTML = taskFieldTemplate;
 
@@ -108,11 +108,18 @@ function renderTaskBoard() {
   renderAllTasks("#ready-task-container", readyTasks)
   renderAllTasks("#in-progress-task-container", inProgressTasks)
   renderAllTasks("#finished-task-container", finishedTasks)
-
+  
+  updateButtonsState();
+}
   // Buttons
-  if (backlogTasks.length) document.querySelector('#add-task-ready').disabled = false;
-  if (readyTasks.length) document.querySelector('#add-task-inProgress').disabled = false;
-  if (inProgressTasks.length) document.querySelector('#add-task-finished').disabled = false;
+function updateButtonsState() {
+  const addReadyBtn = document.querySelector('#add-task-ready');
+  const addInProgressBtn = document.querySelector('#add-task-inProgress');
+  const addFinishedBtn = document.querySelector('#add-task-finished');
+  
+  if (addReadyBtn) addReadyBtn.disabled = !backlogTasks.length;
+  if (addInProgressBtn) addInProgressBtn.disabled = !readyTasks.length;
+  if (addFinishedBtn) addFinishedBtn.disabled = !inProgressTasks.length;
 }
 
 function renderAllTasks (targetContainer, tasksArray) {
@@ -165,8 +172,6 @@ function setupTaskInputHandlers() {
 
 function saveToBacklog() {
   const user = JSON.parse(localStorage.getItem('user'))
-
-  console.log('user: ', user)
 
   let inputValue = document.querySelector("#task-input").value;
   if (inputValue.length) {
@@ -227,6 +232,7 @@ function showAdminPage() {
 }
 
 function createOptionsForReady() {
+  if (!readySelect) return;
   readySelect.innerHTML = '';
 
   const emptyOption = document.createElement('option');
@@ -234,17 +240,14 @@ function createOptionsForReady() {
   emptyOption.className = 'option-empty'
   readySelect.appendChild(emptyOption);
 
-  console.log('backlogTasks: ', backlogTasks)
-  console.log('readyTasks: ', readyTasks)
+  const availableToReadyOptions = backlogTasks.filter
+  (task =>!readyTasks.some(readyTask => readyTask.id === task.id));
 
-  const availableToReadyOptions = backlogTasks.filter(task =>!readyTasks.some(readyTask => readyTask.id === task.id));
-
-  console.log('availableToReadyOptions: ', availableToReadyOptions)
   availableToReadyOptions.forEach(taskInfo => {
     const option = document.createElement('option')
     option.className = "option-item";
     option.textContent = taskInfo.title;
-    option.id = taskInfo.id;
+    option.value = taskInfo.id;
     readySelect.appendChild(option);
   });
 
@@ -264,7 +267,7 @@ function createOptionsForInProgress() {
     const option = document.createElement('option')
     option.className = "option-item";
     option.textContent = taskInfo.title;
-    option.id = taskInfo.id;
+    option.value = taskInfo.id;
     inProgressSelect.appendChild(option);
   });
 
@@ -284,7 +287,7 @@ function createOptionsForFinished() {
     const option = document.createElement('option')
     option.className = "option-item";
     option.textContent = taskInfo.title;
-    option.id = taskInfo.id;
+    option.value = taskInfo.id;
     finishedSelect.appendChild(option);
   });
 
@@ -384,8 +387,13 @@ function addUserToLocalStorage(name, pass) {
 
 readySelect?.addEventListener('change', (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
-  const selectedTask = selectedOption.value;
-  const selectedTaskId = selectedOption.id;
+
+  if (selectedOption.className === 'option-empty') {
+    return;
+  }
+
+ const selectedTask = selectedOption.textContent;
+  const selectedTaskId = selectedOption.value;
   
   readySelect.removeChild(selectedOption);
   let taskInfo = {
@@ -408,8 +416,8 @@ readySelect?.addEventListener('change', (e) => {
 
 inProgressSelect?.addEventListener('change', (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
-  const selectedTask = selectedOption.value;
-  const selectedTaskId = selectedOption.id;
+  const selectedTask = selectedOption.textContent;
+  const selectedTaskId = selectedOption.value;
 
   inProgressSelect.removeChild(selectedOption);
   let taskInfo = {
@@ -432,8 +440,8 @@ inProgressSelect?.addEventListener('change', (e) => {
 
 finishedSelect?.addEventListener('change', (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
-  const selectedTask = selectedOption.value;
-  const selectedTaskId = selectedOption.id;
+ const selectedTask = selectedOption.textContent;
+  const selectedTaskId = selectedOption.value;
   
   finishedSelect.removeChild(selectedOption);
   let taskInfo = {
@@ -519,7 +527,7 @@ function updateTasksData(element, sourceData, targetData, sourceArray) {
 
   // обновляет данные селектов
   const optionItems = document.querySelectorAll('.option-item');
-  Array.from(optionItems).find(option => option.id === element.id)?.remove()
+  Array.from(optionItems).find(option => option.value === element.id)?.remove()
 
   sourceData.updateOptionsMethod && sourceData.updateOptionsMethod()
   targetData.updateOptionsMethod && targetData.updateOptionsMethod()
