@@ -3,13 +3,18 @@ import "./styles/style.css";
 import taskFieldTemplate from "./templates/taskField.html";
 import noAccessTemplate from "./templates/noAccess.html";
 import indexTemplate from "./index.html";
-import administrationUsersTemplate from './templates/administrationUsers.html';
+import administrationUsersTemplate from "./templates/administrationUsers.html";
 import newTask from "./templates/newTask.html";
 import { User } from "./models/User";
-import {addToStorage, generateAdminUser, generateSimpleUser, getFromStorage} from "./utils";
+import {
+  addToStorage,
+  generateAdminUser,
+  generateSimpleUser,
+  getFromStorage,
+} from "./utils";
 import { State } from "./state";
 import { authUser } from "./services/auth";
-import {Task} from "./models/Task"
+import { Task } from "./models/Task";
 
 export const appState = new State();
 
@@ -20,25 +25,25 @@ loginForm?.addEventListener("submit", function (e) {
   const login = formData.get("login");
   const password = formData.get("password");
 
-  const authSuccess = authUser(login, password)
+  const authSuccess = authUser(login, password);
 
   if (authSuccess) {
-    location.reload()
+    location.reload();
   } else {
     document.querySelector("#content").innerHTML = noAccessTemplate;
   }
 });
 
-const backlogTasks = getFromStorage('backlogTasks') || [];
-const readyTasks = getFromStorage('readyTasks') || [];
-const inProgressTasks= getFromStorage('inProgressTasks') || [];
-const finishedTasks= getFromStorage('finishedTasks') || [];
+const backlogTasks = getFromStorage("backlogTasks") || [];
+const readyTasks = getFromStorage("readyTasks") || [];
+const inProgressTasks = getFromStorage("inProgressTasks") || [];
+const finishedTasks = getFromStorage("finishedTasks") || [];
 
-checkForUsers()
+checkForUsers();
 
 function checkForUsers() {
-  const users = getFromStorage('users') || [];
-  const currentUser = JSON.parse(localStorage.getItem('user'))
+  const users = getFromStorage("users") || [];
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   if (!users.length) {
     generateSimpleUser(User);
@@ -48,87 +53,90 @@ function checkForUsers() {
   if (currentUser) renderTaskBoard();
 }
 
-
-const readySelectBlock = document.querySelector('#ready-select-block');
-const inProgressSelectBlock = document.querySelector('#inProgress-select-block');
-const finishedSelectBlock = document.querySelector('#finished-select-block');
+const readySelectBlock = document.querySelector("#ready-select-block");
+const inProgressSelectBlock = document.querySelector(
+  "#inProgress-select-block"
+);
+const finishedSelectBlock = document.querySelector("#finished-select-block");
 
 const readySelect = document.querySelector("#ready-select");
 const inProgressSelect = document.querySelector("#inProgress-select");
 const finishedSelect = document.querySelector("#finished-select");
 
-const backlogContainer = document.querySelector('#backlog-task-container');
-const readyContainer = document.querySelector('#ready-task-container');
-const inProgressContainer = document.querySelector('#in-progress-task-container');
-const finishedContainer = document.querySelector('#finished-task-container');
+const backlogContainer = document.querySelector("#backlog-task-container");
+const readyContainer = document.querySelector("#ready-task-container");
+const inProgressContainer = document.querySelector(
+  "#in-progress-task-container"
+);
+const finishedContainer = document.querySelector("#finished-task-container");
 
 // Buttons
-const addBacklog =  document.querySelector('#add-task-backlog');
-const addReady =  document.querySelector('#add-task-ready');
-const addInProgress =  document.querySelector('#add-task-inProgress');
-const addFinished =  document.querySelector('#add-task-finished');
+const addBacklog = document.querySelector("#add-task-backlog");
+const addReady = document.querySelector("#add-task-ready");
+const addInProgress = document.querySelector("#add-task-inProgress");
+const addFinished = document.querySelector("#add-task-finished");
 
 const groupedData = {
-  'backlog-task-container': {
+  "backlog-task-container": {
     html: backlogContainer,
     tasks: backlogTasks,
-    tasksName: 'backlogTasks',
+    tasksName: "backlogTasks",
     button: addBacklog,
   },
-  'ready-task-container':  {
+  "ready-task-container": {
     html: readyContainer,
     tasks: readyTasks,
-    tasksName: 'readyTasks',
+    tasksName: "readyTasks",
     button: addReady,
-    updateOptionsMethod: createOptionsForReady
+    updateOptionsMethod: createOptionsForReady,
   },
-  'in-progress-task-container': {
+  "in-progress-task-container": {
     html: inProgressContainer,
     tasks: inProgressTasks,
-    tasksName: 'inProgressTasks',
+    tasksName: "inProgressTasks",
     button: addInProgress,
-    updateOptionsMethod: createOptionsForInProgress
+    updateOptionsMethod: createOptionsForInProgress,
   },
-  'finished-task-container': {
+  "finished-task-container": {
     html: finishedContainer,
     tasks: finishedTasks,
-    tasksName: 'finishedTasks',
+    tasksName: "finishedTasks",
     button: addFinished,
-    updateOptionsMethod: createOptionsForFinished
-  }
-}
+    updateOptionsMethod: createOptionsForFinished,
+  },
+};
 
 function renderTaskBoard() {
-  const navbar = document.querySelector('#navbar')
-  navbar?.remove()
+  const navbar = document.querySelector("#navbar");
+  navbar?.remove();
 
   document.querySelector("#content").innerHTML = taskFieldTemplate;
 
-  renderAllTasks("#backlog-task-container", backlogTasks)
-  renderAllTasks("#ready-task-container", readyTasks)
-  renderAllTasks("#in-progress-task-container", inProgressTasks)
-  renderAllTasks("#finished-task-container", finishedTasks)
-  
+  renderAllTasks("#backlog-task-container", backlogTasks);
+  renderAllTasks("#ready-task-container", readyTasks);
+  renderAllTasks("#in-progress-task-container", inProgressTasks);
+  renderAllTasks("#finished-task-container", finishedTasks);
+
   updateButtonsState();
 }
-  // Buttons
+// Buttons
 function updateButtonsState() {
-  const addReadyBtn = document.querySelector('#add-task-ready');
-  const addInProgressBtn = document.querySelector('#add-task-inProgress');
-  const addFinishedBtn = document.querySelector('#add-task-finished');
-  
+  const addReadyBtn = document.querySelector("#add-task-ready");
+  const addInProgressBtn = document.querySelector("#add-task-inProgress");
+  const addFinishedBtn = document.querySelector("#add-task-finished");
+
   if (addReadyBtn) addReadyBtn.disabled = !backlogTasks.length;
   if (addInProgressBtn) addInProgressBtn.disabled = !readyTasks.length;
   if (addFinishedBtn) addFinishedBtn.disabled = !inProgressTasks.length;
 }
 
-function renderAllTasks (targetContainer, tasksArray) {
+function renderAllTasks(targetContainer, tasksArray) {
   for (let task of tasksArray) {
-    renderTask(targetContainer, task)
+    renderTask(targetContainer, task);
   }
 }
 
-function renderTask (targetContainer, taskInfo) {
+function renderTask(targetContainer, taskInfo) {
   let newTaskDiv = document.createElement("div");
   newTaskDiv.className = "task";
   newTaskDiv.textContent = taskInfo.title;
@@ -137,41 +145,41 @@ function renderTask (targetContainer, taskInfo) {
 }
 
 // Логика добавления в колонки
-function addToBacklog () {
+function addToBacklog() {
   const addBacklog = document.querySelector("#add-task-backlog");
   addBacklog.classList.add("hidden");
-  
-  document.querySelector('#new-task').innerHTML = newTask
+
+  document.querySelector("#new-task").innerHTML = newTask;
   document.querySelector("#task-input").focus();
-  document.querySelector("#task-input").addEventListener('blur', function() {
+  document.querySelector("#task-input").addEventListener("blur", function () {
     saveToBacklog();
   });
 }
 
 //TODO КНОПКА ENTER выдает ошибку
 function setupTaskInputHandlers() {
-  const taskInput = document.getElementById('task-input');
+  const taskInput = document.getElementById("task-input");
 
-  taskInput.removeEventListener('blur', handleBlur);
-  taskInput.removeEventListener('keydown', handleKeyDown);
+  taskInput.removeEventListener("blur", handleBlur);
+  taskInput.removeEventListener("keydown", handleKeyDown);
 
   function handleBlur() {
     saveToBacklog();
   }
 
   function handleKeyDown(event) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       saveToBacklog();
       event.preventDefault();
     }
   }
 
-  taskInput.addEventListener('blur', handleBlur);
-  taskInput.addEventListener('keydown', handleKeyDown);
+  taskInput.addEventListener("blur", handleBlur);
+  taskInput.addEventListener("keydown", handleKeyDown);
 }
 
 function saveToBacklog() {
-  const user = JSON.parse(localStorage.getItem('user'))
+  const user = JSON.parse(localStorage.getItem("user"));
 
   let inputValue = document.querySelector("#task-input").value;
   if (inputValue.length) {
@@ -180,71 +188,87 @@ function saveToBacklog() {
     let taskInfo = {
       title: newTask.text,
       id: newTask.id,
-      creator: user.login
+      creator: user.login,
     };
 
     backlogTasks.push(taskInfo);
-    addToStorage(taskInfo, 'backlogTasks')
+    addToStorage(taskInfo, "backlogTasks");
 
-    renderTask("#backlog-task-container", taskInfo)
+    renderTask("#backlog-task-container", taskInfo);
   }
 
   document.querySelector("#task-input").remove();
   document.querySelector("#add-task-backlog").classList.remove("hidden");
-  document.querySelector('#submit-backlog').remove();
+  document.querySelector("#submit-backlog").remove();
 
-  createOptionsForReady()
+  createOptionsForReady();
 }
 
 function addToReady() {
-  readySelectBlock.style.display = 'block';
+  readySelectBlock.style.display = "block";
   readyContainer.appendChild(readySelectBlock);
 }
 
 function addToInProgress() {
-  inProgressSelectBlock.style.display = 'block';
+  inProgressSelectBlock.style.display = "block";
   inProgressContainer.appendChild(inProgressSelectBlock);
 }
 
 function addToFinished() {
-  finishedSelectBlock.style.display = 'block';
+  finishedSelectBlock.style.display = "block";
   finishedContainer.appendChild(finishedSelectBlock);
 }
 
 function displayMenuList() {
   const userMenu = document.querySelector('#userMenu');
-  if (userMenu.style.display === 'none') {
-    userMenu.style.display = 'block';
+  const adminButton = document.querySelector('#adminButton')
+
+  if (!userMenu) return
+
+  if (userMenu.style.display === "none" || userMenu.style.display === "") {
+    userMenu.style.display = "block"
+
+    if (adminButton) {
+      adminButton.style.display = isCurrentUserAdmin() ? "block" : "none" 
+    }
   } else {
-    userMenu.style.display = 'none';
-  } 
+    userMenu.style.display = "none"
+  }
+}
+
+function isCurrentUserAdmin() {
+  const currentUser = JSON.parse(localStorage.getItem("user"));
+  return currentUser && currentUser.admin === true;
 }
 
 function showLoginPage() {
-  localStorage.removeItem('user');
   document.querySelector("#content").innerHTML = indexTemplate;
 }
 
 function showAdminPage() {
-  localStorage.removeItem('user');
+  // if (!isCurrentUserAdmin()) {
+  //   alert("Доступ запрещен. Требуются права администратора")
+  //   return
+  // }
   document.querySelector("#content").innerHTML = administrationUsersTemplate;
-  displayUserList()
+  displayUserList();
 }
 
 function createOptionsForReady() {
   if (!readySelect) return;
-  readySelect.innerHTML = '';
+  readySelect.innerHTML = "";
 
-  const emptyOption = document.createElement('option');
-  emptyOption.textContent = 'Выберите вариант';
-  emptyOption.className = 'option-empty'
+  const emptyOption = document.createElement("option");
+  emptyOption.textContent = "Выберите вариант";
+  emptyOption.className = "option-empty";
   readySelect.appendChild(emptyOption);
 
-  const availableToReadyOptions = backlogTasks.filter
-  (task =>!readyTasks.some(readyTask => readyTask.id === task.id));
+  const availableToReadyOptions = backlogTasks.filter(
+    (task) => !readyTasks.some((readyTask) => readyTask.id === task.id)
+  );
 
-  availableToReadyOptions.forEach(taskInfo => {
-    const option = document.createElement('option')
+  availableToReadyOptions.forEach((taskInfo) => {
+    const option = document.createElement("option");
     option.className = "option-item";
     option.textContent = taskInfo.title;
     option.value = taskInfo.id;
@@ -255,16 +279,19 @@ function createOptionsForReady() {
 }
 
 function createOptionsForInProgress() {
-  inProgressSelect.innerHTML = '';
+  inProgressSelect.innerHTML = "";
 
-  const emptyOption = document.createElement('option');
-  emptyOption.textContent = 'Выберите вариант';
-  emptyOption.className = 'option-empty'
+  const emptyOption = document.createElement("option");
+  emptyOption.textContent = "Выберите вариант";
+  emptyOption.className = "option-empty";
   inProgressSelect.appendChild(emptyOption);
 
-  const availableToInProgressTasks = readyTasks.filter(task => !inProgressTasks.some(inProgressTask => inProgressTask.id === task.id))
-  availableToInProgressTasks.forEach(taskInfo => {
-    const option = document.createElement('option')
+  const availableToInProgressTasks = readyTasks.filter(
+    (task) =>
+      !inProgressTasks.some((inProgressTask) => inProgressTask.id === task.id)
+  );
+  availableToInProgressTasks.forEach((taskInfo) => {
+    const option = document.createElement("option");
     option.className = "option-item";
     option.textContent = taskInfo.title;
     option.value = taskInfo.id;
@@ -275,16 +302,18 @@ function createOptionsForInProgress() {
 }
 
 function createOptionsForFinished() {
-  finishedSelect.innerHTML = '';
+  finishedSelect.innerHTML = "";
 
-  const emptyOption = document.createElement('option');
-  emptyOption.textContent = 'Выберите вариант';
-  emptyOption.className = 'option-empty'
+  const emptyOption = document.createElement("option");
+  emptyOption.textContent = "Выберите вариант";
+  emptyOption.className = "option-empty";
   finishedSelect.appendChild(emptyOption);
 
-  const availableToInfinishedTasks = inProgressTasks.filter(task => !finishedTasks.some(finishedTask => finishedTask.id === task.id))
-  availableToInfinishedTasks.forEach(taskInfo => {
-    const option = document.createElement('option')
+  const availableToInfinishedTasks = inProgressTasks.filter(
+    (task) => !finishedTasks.some((finishedTask) => finishedTask.id === task.id)
+  );
+  availableToInfinishedTasks.forEach((taskInfo) => {
+    const option = document.createElement("option");
     option.className = "option-item";
     option.textContent = taskInfo.title;
     option.value = taskInfo.id;
@@ -294,19 +323,18 @@ function createOptionsForFinished() {
   addFinished.disabled = false;
 }
 
-document.addEventListener('click', (e) => {
+document.addEventListener("click", (e) => {
   const addBacklog = e.target.closest("#add-task-backlog");
   const submitBacklog = e.target.closest("#submit-backlog");
   const addReady = e.target.closest("#add-task-ready");
   const addInProgress = e.target.closest("#add-task-inProgress");
   const addFinished = e.target.closest("#add-task-finished");
-  const addMenuList = e.target.closest('.user-avatar');
+  const addMenuList = e.target.closest(".user-avatar");
   const logoutButton = e.target.closest("#logoutButton");
   const adminButton = e.target.closest("#adminButton");
   const addNewUserBtn = e.target.closest("#addNewUserBtn");
 
-  
-  if (addBacklog) addToBacklog()
+  if (addBacklog) addToBacklog();
   else if (submitBacklog) saveToBacklog();
   else if (addReady) addToReady();
   else if (addInProgress) addToInProgress();
@@ -318,103 +346,108 @@ document.addEventListener('click', (e) => {
 });
 
 function displayUserList() {
-  const users = getFromStorage('users')
-  const userList = document.getElementById('userList');
-  
+  const users = getFromStorage("users");
+  const userList = document.getElementById("userList");
+
   // Очищаем список перед добавлением новых данных
-  userList.innerHTML = '';
+  userList.innerHTML = "";
 
   // Проверяем, есть ли пользователи
   if (Object.keys(users).length === 0) {
-      userList.innerHTML = '<li>Пользователи отсутствуют</li>';
-      return;
+    userList.innerHTML = "<li>Пользователи отсутствуют</li>";
+    return;
   }
 
   // Создаем элементы списка для каждого пользователя
   Object.entries(users).forEach(([username, userData]) => {
-      const listItem = document.createElement('li');
-      listItem.textContent = `Логин: ${userData.login} Пароль: ${userData.password}`;
-      
-      // Добавляем кнопку для удаления пользователя
-      const deleteButton = document.createElement('button');
-      deleteButton.textContent = 'Удалить';
-      deleteButton.onclick = () => deleteUser(userData);
-      listItem.appendChild(deleteButton);
+    const listItem = document.createElement("li");
+    listItem.textContent = `Логин: ${userData.login} Пароль: ${userData.password}`;
 
-      userList.appendChild(listItem);
+    // Добавляем кнопку для удаления пользователя
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Удалить";
+    deleteButton.onclick = () => deleteUser(userData);
+    listItem.appendChild(deleteButton);
+
+    userList.appendChild(listItem);
   });
 }
 
 function deleteUser(userData) {
-  let users = getFromStorage('users')
-  console.log(userData)
+  let users = getFromStorage("users");
+  console.log(userData);
 
-  users = users.filter(el => el.login !== userData.login)
+  users = users.filter((el) => el.login !== userData.login);
 
-
-  localStorage.setItem('users', JSON.stringify(users));
-  displayUserList()
+  localStorage.setItem("users", JSON.stringify(users));
+  displayUserList();
 }
 
 function addUSerFromAdminPage() {
-  const userName = document.getElementById('newUserName').value;
-  const userPass = document.getElementById('newUserPass').value;
-  
+  const userName = document.getElementById("newUserName").value;
+  const userPass = document.getElementById("newUserPass").value;
+
   if (userName && userPass) {
-      addUserToLocalStorage(userName, userPass);
-      // Очищаем форму после добавления
-      document.getElementById('newUserName').value = '';
-      document.getElementById('newUserPass').value = '';
+    addUserToLocalStorage(userName, userPass);
+    // Очищаем форму после добавления
+    document.getElementById("newUserName").value = "";
+    document.getElementById("newUserPass").value = "";
   } else {
-      alert('Пожалуйста, заполните все поля.');
+    alert("Пожалуйста, заполните все поля.");
   }
 }
 
 function addUserToLocalStorage(name, pass) {
-  console.log('PFT<FK')
-  const users = getFromStorage('users')
-  
+  console.log("PFT<FK");
+  const users = getFromStorage("users");
+
   users.push({
     login: name.trim(),
-    password: pass.trim()
+    password: pass.trim(),
   });
-  
-  localStorage.setItem('users', JSON.stringify(users));
-  
+
+  localStorage.setItem("users", JSON.stringify(users));
+
   displayUserList(); // Обновляем список пользователей после добавления нового
 }
 
-
-readySelect?.addEventListener('change', (e) => {
+readySelect?.addEventListener("change", (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
 
-  if (selectedOption.className === 'option-empty') {
+  if (selectedOption.className === "option-empty") {
     return;
   }
 
- const selectedTask = selectedOption.textContent;
+  const selectedTask = selectedOption.textContent;
   const selectedTaskId = selectedOption.value;
-  
+
   readySelect.removeChild(selectedOption);
   let taskInfo = {
     title: selectedTask,
-    id: selectedTaskId
+    id: selectedTaskId,
   };
   readyTasks.push(taskInfo);
-  addToStorage(taskInfo, 'readyTasks')
+  addToStorage(taskInfo, "readyTasks");
 
-  const backlogTasksAsHtml = document.querySelectorAll("#backlog-task-container .task")
-  deleteTask(backlogTasksAsHtml, taskInfo, backlogTasks, 'backlogTasks')  
-  
-  addTaskToContainer(selectedTask, selectedTaskId, readyContainer, readySelectBlock);  
-  if (readySelect.querySelectorAll('.option-item').length === 0) {
+  const backlogTasksAsHtml = document.querySelectorAll(
+    "#backlog-task-container .task"
+  );
+  deleteTask(backlogTasksAsHtml, taskInfo, backlogTasks, "backlogTasks");
+
+  addTaskToContainer(
+    selectedTask,
+    selectedTaskId,
+    readyContainer,
+    readySelectBlock
+  );
+  if (readySelect.querySelectorAll(".option-item").length === 0) {
     addReady.disabled = true;
   } else {
     addReady.disabled = false;
   }
 });
 
-inProgressSelect?.addEventListener('change', (e) => {
+inProgressSelect?.addEventListener("change", (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
   const selectedTask = selectedOption.textContent;
   const selectedTaskId = selectedOption.value;
@@ -422,41 +455,60 @@ inProgressSelect?.addEventListener('change', (e) => {
   inProgressSelect.removeChild(selectedOption);
   let taskInfo = {
     title: selectedTask,
-    id: selectedTaskId
+    id: selectedTaskId,
   };
   inProgressTasks.push(taskInfo);
-  addToStorage(taskInfo, 'inProgressTasks')
+  addToStorage(taskInfo, "inProgressTasks");
 
-  const readyTasksAsHtml = document.querySelectorAll("#ready-task-container .task")
-  deleteTask(readyTasksAsHtml, taskInfo, readyTasks, 'readyTasks')
+  const readyTasksAsHtml = document.querySelectorAll(
+    "#ready-task-container .task"
+  );
+  deleteTask(readyTasksAsHtml, taskInfo, readyTasks, "readyTasks");
 
-  addTaskToContainer(selectedTask, selectedTaskId, inProgressContainer, inProgressSelectBlock);
-  if (inProgressSelect.querySelectorAll('.option-item').length === 0) {
+  addTaskToContainer(
+    selectedTask,
+    selectedTaskId,
+    inProgressContainer,
+    inProgressSelectBlock
+  );
+  if (inProgressSelect.querySelectorAll(".option-item").length === 0) {
     addInProgress.disabled = true;
   } else {
     addInProgress.disabled = false;
   }
 });
 
-finishedSelect?.addEventListener('change', (e) => {
+finishedSelect?.addEventListener("change", (e) => {
   const selectedOption = e.target.options[e.target.selectedIndex];
- const selectedTask = selectedOption.textContent;
+  const selectedTask = selectedOption.textContent;
   const selectedTaskId = selectedOption.value;
-  
+
   finishedSelect.removeChild(selectedOption);
   let taskInfo = {
     title: selectedTask,
-    id: selectedTaskId
+    id: selectedTaskId,
   };
   finishedTasks.push(taskInfo);
-  addToStorage(taskInfo, 'finishedTasks')
+  addToStorage(taskInfo, "finishedTasks");
 
-  const inProgressTasksAsHtml = document.querySelectorAll("#in-progress-task-container .task")
-  deleteTask(inProgressTasksAsHtml, taskInfo, inProgressTasks, 'inProgressTasks')
+  const inProgressTasksAsHtml = document.querySelectorAll(
+    "#in-progress-task-container .task"
+  );
+  deleteTask(
+    inProgressTasksAsHtml,
+    taskInfo,
+    inProgressTasks,
+    "inProgressTasks"
+  );
 
-  addTaskToContainer(selectedTask, selectedTaskId, finishedContainer, finishedSelectBlock);
-  
-  if (finishedSelect.querySelectorAll('.option-item').length === 0) {
+  addTaskToContainer(
+    selectedTask,
+    selectedTaskId,
+    finishedContainer,
+    finishedSelectBlock
+  );
+
+  if (finishedSelect.querySelectorAll(".option-item").length === 0) {
     addFinished.disabled = true;
   } else {
     addFinished.disabled = false;
@@ -464,89 +516,88 @@ finishedSelect?.addEventListener('change', (e) => {
 });
 
 function addTaskToContainer(taskText, taskId, container, selectBlock) {
-  let newTaskDiv = document.createElement('div');
-  newTaskDiv.className = 'task'; 
+  let newTaskDiv = document.createElement("div");
+  newTaskDiv.className = "task";
   newTaskDiv.textContent = taskText;
   newTaskDiv.id = taskId;
   container.appendChild(newTaskDiv);
-  selectBlock.style.display = 'none';
+  selectBlock.style.display = "none";
 
   createOptionsForInProgress();
   createOptionsForFinished();
 }
 
 function deleteTask(htmlElements, taskInfo, array, storageKey) {
-  Array.from(htmlElements).find(element => element.id === taskInfo.id)?.remove()
+  Array.from(htmlElements)
+    .find((element) => element.id === taskInfo.id)
+    ?.remove();
 
-  const index = array.findIndex(task => task.id === taskInfo.id);
-  if (index!== -1) {
+  const index = array.findIndex((task) => task.id === taskInfo.id);
+  if (index !== -1) {
     array.splice(index, 1);
   }
-  localStorage.setItem(storageKey, JSON.stringify(array))  
+  localStorage.setItem(storageKey, JSON.stringify(array));
 }
 
 //drag and drop
 
 dragula(
-[ backlogContainer,
-  readyContainer,
-  inProgressContainer,
-  finishedContainer
-],
-{
-  revertOnSpill: true,
-}
-)
-.on('drop', function (el, target, source) {
-  const sourceData = groupedData[source.id]
+  [backlogContainer, readyContainer, inProgressContainer, finishedContainer],
+  {
+    revertOnSpill: true,
+  }
+).on("drop", function (el, target, source) {
+  const sourceData = groupedData[source.id];
   const targetData = groupedData[target.id];
-  const sourceArray = sourceData.tasks
+  const sourceArray = sourceData.tasks;
 
-  updateTasksData(el, sourceData, targetData, sourceArray)
+  updateTasksData(el, sourceData, targetData, sourceArray);
 
-  targetData.button.disabled = !sourceData.tasks.length
-})
+  targetData.button.disabled = !sourceData.tasks.length;
+});
 
 function updateTasksData(element, sourceData, targetData, sourceArray) {
   let taskObject = {
     title: element.textContent,
-    id: element.id
+    id: element.id,
   };
 
   // обновляет данные тасков
   sourceArray.forEach((item, index) => {
     if (item.id === element.id) {
       sourceArray.splice(index, 1);
-      console.log('el удален из массива', sourceArray)
+      console.log("el удален из массива", sourceArray);
     }
-  })
-  targetData.tasks.push(taskObject)
+  });
+  targetData.tasks.push(taskObject);
 
   localStorage.setItem(sourceData.tasksName, JSON.stringify(sourceData.tasks));
   localStorage.setItem(targetData.tasksName, JSON.stringify(targetData.tasks));
 
   // обновляет данные селектов
-  const optionItems = document.querySelectorAll('.option-item');
-  Array.from(optionItems).find(option => option.value === element.id)?.remove()
+  const optionItems = document.querySelectorAll(".option-item");
+  Array.from(optionItems)
+    .find((option) => option.value === element.id)
+    ?.remove();
 
-  sourceData.updateOptionsMethod && sourceData.updateOptionsMethod()
-  targetData.updateOptionsMethod && targetData.updateOptionsMethod()
+  sourceData.updateOptionsMethod && sourceData.updateOptionsMethod();
+  targetData.updateOptionsMethod && targetData.updateOptionsMethod();
 }
 
 function addObjectToArray(el, target) {
   switch (target.id) {
-    case 'backlog-task-container':
+    case "backlog-task-container":
       createOptionsForReady();
       break;
-    case 'ready-task-container':
+    case "ready-task-container":
       createOptionsForInProgress();
       break;
-    case 'in-progress-task-container':
-      createOptionsForFinished()
+    case "in-progress-task-container":
+      createOptionsForFinished();
       break;
-    case 'finished-task-container':
+    case "finished-task-container":
       break;
-    default: console.log('Контейнер не распознан');
+    default:
+      console.log("Контейнер не распознан");
   }
 }
-
