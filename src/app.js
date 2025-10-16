@@ -17,6 +17,12 @@ import { State } from "./state";
 import { authUser } from "./services/auth";
 import { Task } from "./models/Task";
 
+document.addEventListener('DOMContentLoaded', function() {
+  const currenUser = JSON.parse(localStorage.getItem('user'))
+
+  if (currenUser) renderTaskBoard()
+})
+
 export const appState = new State();
 
 const loginForm = document.querySelector("#app-login-form");
@@ -34,7 +40,6 @@ loginForm?.addEventListener("submit", function (e) {
     document.querySelector("#content").innerHTML = noAccessTemplate;
   }
 });
-
 
 const backlogTasks = getFromStorage("backlogTasks") || [];
 const readyTasks = getFromStorage("readyTasks") || [];
