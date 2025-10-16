@@ -11,6 +11,7 @@ import {
   generateAdminUser,
   generateSimpleUser,
   getFromStorage,
+  checkAdminAccess,
 } from "./utils";
 import { State } from "./state";
 import { authUser } from "./services/auth";
@@ -28,11 +29,12 @@ loginForm?.addEventListener("submit", function (e) {
   const authSuccess = authUser(login, password);
 
   if (authSuccess) {
-    location.reload();
+    renderTaskBoard();
   } else {
     document.querySelector("#content").innerHTML = noAccessTemplate;
   }
 });
+
 
 const backlogTasks = getFromStorage("backlogTasks") || [];
 const readyTasks = getFromStorage("readyTasks") || [];
@@ -43,14 +45,11 @@ checkForUsers();
 
 function checkForUsers() {
   const users = getFromStorage("users") || [];
-  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   if (!users.length) {
     generateSimpleUser(User);
     generateAdminUser(User);
   }
-
-  if (currentUser) renderTaskBoard();
 }
 
 const readySelectBlock = document.querySelector("#ready-select-block");
@@ -220,25 +219,20 @@ function addToFinished() {
 }
 
 function displayMenuList() {
-  const userMenu = document.querySelector('#userMenu');
-  const adminButton = document.querySelector('#adminButton')
+  const userMenu = document.querySelector("#userMenu");
+  const adminButton = document.querySelector("#adminButton");
 
-  if (!userMenu) return
+  if (!userMenu) return;
 
   if (userMenu.style.display === "none" || userMenu.style.display === "") {
-    userMenu.style.display = "block"
+    userMenu.style.display = "block";
 
-    if (adminButton) {
-      adminButton.style.display = isCurrentUserAdmin() ? "block" : "none" 
+    if (!checkAdminAccess()) {
+      adminButton.style.display = "none";
     }
   } else {
-    userMenu.style.display = "none"
+    userMenu.style.display = "none";
   }
-}
-
-function isCurrentUserAdmin() {
-  const currentUser = JSON.parse(localStorage.getItem("user"));
-  return currentUser && currentUser.admin === true;
 }
 
 function showLoginPage() {
@@ -246,10 +240,10 @@ function showLoginPage() {
 }
 
 function showAdminPage() {
-  // if (!isCurrentUserAdmin()) {
-  //   alert("Доступ запрещен. Требуются права администратора")
-  //   return
-  // }
+  if (!checkAdminAccess()) {
+    alert("Доступ запрещен. Требуются права администратора")
+    return
+  }
   document.querySelector("#content").innerHTML = administrationUsersTemplate;
   displayUserList();
 }
@@ -375,7 +369,6 @@ function displayUserList() {
 
 function deleteUser(userData) {
   let users = getFromStorage("users");
-  console.log(userData);
 
   users = users.filter((el) => el.login !== userData.login);
 
@@ -398,7 +391,6 @@ function addUSerFromAdminPage() {
 }
 
 function addUserToLocalStorage(name, pass) {
-  console.log("PFT<FK");
   const users = getFromStorage("users");
 
   users.push({
@@ -566,7 +558,6 @@ function updateTasksData(element, sourceData, targetData, sourceArray) {
   sourceArray.forEach((item, index) => {
     if (item.id === element.id) {
       sourceArray.splice(index, 1);
-      console.log("el удален из массива", sourceArray);
     }
   });
   targetData.tasks.push(taskObject);

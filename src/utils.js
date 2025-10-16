@@ -17,7 +17,8 @@ export const generateUser = function (User, userData) {
 export const generateSimpleUser = function (User) {
   generateUser(User, {
     login: 'Vasya',
-    password: 'qwerty123'
+    password: 'qwerty123',
+    role: false
   })
 }
 
@@ -25,6 +26,15 @@ export const generateAdminUser = function (User) {
   generateUser(User, {
     login: 'admin',
     password: '123',
-    admin: true
+    role: true
   })
+}
+
+export const checkAdminAccess = () => {
+  const userData = JSON.parse(localStorage.getItem('user') || 'null')
+  return userData && userData.role === true
+}
+
+export const getCurrentUser = () => {
+  return JSON.parse(localStorage.getItem('user') || 'null')
 }
