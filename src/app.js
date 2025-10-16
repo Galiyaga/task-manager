@@ -222,17 +222,17 @@ function displayMenuList() {
   const userMenu = document.querySelector("#userMenu");
   const adminButton = document.querySelector("#adminButton");
 
-  if (!userMenu) return;
+  if (userMenu.classList.contains('hidden')) {
+    userMenu.classList.remove('hidden');
 
-  if (userMenu.style.display === "none" || userMenu.style.display === "") {
-    userMenu.style.display = "block";
-
-    if (!checkAdminAccess()) {
-      adminButton.style.display = "none";
-    }
+    if (checkAdminAccess()) {
+    adminButton.style.display = "block";
   } else {
-    userMenu.style.display = "none";
+    adminButton.style.display = "none";
   }
+} else {
+  userMenu.classList.add('hidden');
+}
 }
 
 function showLoginPage() {
@@ -246,6 +246,10 @@ function showAdminPage() {
   }
   document.querySelector("#content").innerHTML = administrationUsersTemplate;
   displayUserList();
+}
+
+function showHomePage() {
+  document.querySelector("#content").innerHTML = taskFieldTemplate;
 }
 
 function createOptionsForReady() {
@@ -327,6 +331,7 @@ document.addEventListener("click", (e) => {
   const logoutButton = e.target.closest("#logoutButton");
   const adminButton = e.target.closest("#adminButton");
   const addNewUserBtn = e.target.closest("#addNewUserBtn");
+  const goToTasks = e.target.closest('#goToTasks')
 
   if (addBacklog) addToBacklog();
   else if (submitBacklog) saveToBacklog();
@@ -337,6 +342,7 @@ document.addEventListener("click", (e) => {
   else if (logoutButton) showLoginPage();
   else if (adminButton) showAdminPage();
   else if (addNewUserBtn) addUSerFromAdminPage();
+  else if (goToTasks) showHomePage()
 });
 
 function displayUserList() {

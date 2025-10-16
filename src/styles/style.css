@@ -115,7 +115,6 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
 }
 
 .menu-list {
-  display: none;
   position: absolute;
   background-color: rgba(255, 255, 255, 1);
   min-width: 160px;
